@@ -1,89 +1,1148 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarSoko POS - Professional V13.5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        
+        /* Responsive Tab Navigation */
+        #tabs {
+            display: flex;
+            flex-wrap: wrap; /* Allows tabs to wrap on smaller screens */
+            gap: 0.5rem; /* Adds space between wrapped tabs */
+            border-bottom: 1px solid #374151; /* dark mode border */
+        }
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.1.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.1.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.1.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #9ca3af; /* dark mode text */
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .tab-btn:hover {
+            color: #f9fafb; /* dark mode hover */
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
+        .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background-color: #1f2937; padding: 2rem; border-radius: 0.5rem; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
+        .screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=2574&auto=format&fit=crop') center/cover;
+            display: flex; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .category-btn.active {
+            background-color: #2563eb;
+            color: white;
+            font-weight: 600;
+        }
+        .gemini-button {
+            background: linear-gradient(90deg, #4f46e5, #c026d3);
+            border: none;
+            color: white;
+        }
+        .gemini-button:hover {
+            background: linear-gradient(90deg, #4338ca, #a21caf);
+        }
+        
+        /* --- PRINT STYLES --- */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            #print-area {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .modal-backdrop, #app {
+                display: none !important;
+                visibility: hidden !important;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-sm">
+            <h2 class="text-3xl font-bold mb-2 text-center text-gray-100">BarSoko POS</h2>
+            <p class="text-gray-400 mb-6 text-center">Please sign in</p>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300">Select User</label>
+                    <select id="username" class="mt-1 block w-full border border-gray-600 bg-gray-700 rounded-md shadow-sm p-2 text-gray-200"></select>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
+                    <input type="password" id="password" class="mt-1 block w-full border border-gray-600 bg-gray-700 rounded-md shadow-sm p-2 text-gray-200" required>
+                </div>
+                <p id="login-error" class="text-red-500 text-sm hidden">Invalid username or password.</p>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition">Sign In</button>
+            </form>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <!-- Force Password Change Screen -->
+    <div id="password-change-screen" class="screen hidden">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-2xl w-full max-w-sm">
+            <h2 class="text-2xl font-bold mb-2 text-center text-gray-100">Create New Password</h2>
+            <p class="text-gray-400 mb-6 text-center">You must set a new password to continue.</p>
+            <form id="password-change-form" class="space-y-4">
+                <div>
+                    <label for="new-password" class="block text-sm font-medium text-gray-300">New Password</label>
+                    <input type="password" id="new-password" class="mt-1 block w-full border p-2 border-gray-600 bg-gray-700 text-gray-200" required>
+                </div>
+                <div class="mt-2">
+                    <label for="confirm-password" class="block text-sm font-medium text-gray-300">Confirm Password</label>
+                    <input type="password" id="confirm-password" class="mt-1 block w-full border p-2 border-gray-600 bg-gray-700 text-gray-200" required>
+                </div>
+                <p id="pw-error" class="text-red-500 text-sm mt-1 hidden"></p>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition">Set Password & Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="max-w-7xl mx-auto p-4 hidden">
+        <!-- Header -->
+        <header class="bg-gray-800 rounded-lg shadow p-4 mb-4 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-100">BarSoko POS</h1>
+                <p id="waiter-info" class="text-sm text-gray-400">Welcome!</p>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div id="status-indicator" class="flex items-center space-x-2"></div>
+                <button id="sync-btn" aria-label="Sync Data" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition flex items-center space-x-2">
+                    <i id="sync-icon" class="fas fa-sync"></i>
+                    <span class="hidden sm:inline">Sync</span>
+                </button>
+                <button id="logout-btn" aria-label="Log out" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition flex items-center space-x-2">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="lg:col-span-2 space-y-4">
+                <!-- Open Bills Section -->
+                <div class="bg-gray-800 rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-100">Open Bills</h2>
+                    <div id="open-bills-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3"></div>
+                </div>
+
+                <!-- Point of Sale Section -->
+                <div class="bg-gray-800 rounded-lg shadow p-6">
+                    <div class="flex justify-between items-center mb-4">
+                         <h2 class="text-xl font-semibold text-gray-100">Point of Sale</h2>
+                         <div id="current-bill-info" class="text-lg font-bold text-blue-400"></div>
+                    </div>
+                    <div id="product-categories" class="flex flex-wrap gap-2 mb-4"></div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="product-grid" role="grid"></div>
+                    <hr class="my-6 border-gray-700">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-100">Current Order</h3>
+                    <div id="cart" class="space-y-2"></div>
+                    <div id="cart-summary" class="mt-6 pt-4 border-t-2 border-dashed border-gray-700">
+                        <div class="flex justify-between items-center text-2xl font-bold">
+                            <span id="total-label">Total:</span><span id="cart-total">Ksh 0.00</span>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <button id="save-bill-btn" class="bg-orange-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-orange-600 transition disabled:bg-gray-400" disabled><i class="fas fa-save mr-2"></i>Save</button>
+                            <button id="pay-cash-btn" class="bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition disabled:bg-gray-400" disabled><i class="fas fa-money-bill-wave mr-2"></i>Cash</button>
+                            <button id="pay-mpesa-btn" class="bg-emerald-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-emerald-600 transition disabled:bg-gray-400 flex items-center justify-center" disabled><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1280px-M-PESA_LOGO-01.svg.png" class="h-5 mr-2" alt="M-PESA"> M-Pesa</button>
+                            <button id="pay-card-btn" class="bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400" disabled><i class="fas fa-credit-card mr-2"></i>Card</button>
+                        </div>
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+                            <button id="clear-cart-btn" class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition disabled:bg-gray-400" disabled>Clear/Close Bill</button>
+                            <button id="print-bill-btn" class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition disabled:bg-gray-400" disabled><i class="fas fa-print mr-2"></i>Print Bill</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Management Tabs -->
+            <div class="bg-gray-800 rounded-lg shadow p-6">
+                 <!-- Shift Management Panel -->
+                <div id="shift-management-panel" class="bg-gray-700 p-4 rounded-lg mb-6"></div>
+                <div class="mb-6">
+                    <nav id="tabs" role="tablist"></nav>
+                </div>
+                <!-- Tab Content Panels -->
+                <div id="tab-content-dashboard" role="tabpanel" class="mt-6 hidden"></div>
+                <div id="tab-content-products" role="tabpanel" class="mt-6 hidden">
+                    <form id="add-product-form" class="space-y-4">
+                        <div><label for="product-name" class="block text-sm font-medium text-gray-300">Product Name</label><input type="text" id="product-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>
+                        <div><label for="product-price" class="block text-sm font-medium text-gray-300">Price (Ksh)</label><input type="number" id="product-price" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div>
+                        <div>
+                            <label for="product-category" class="block text-sm font-medium text-gray-300">Category</label>
+                            <select id="product-category" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600"></select>
+                        </div>
+                        <div><label for="product-stock" class="block text-sm font-medium text-gray-300">Initial Stock</label><input type="number" id="product-stock" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition">Add Product</button>
+                    </form>
+                    <hr class="my-6 border-gray-600">
+                    <h3 class="font-semibold text-gray-200 mb-2">Existing Products</h3>
+                    <div id="product-list-management" class="space-y-2"></div>
+                    <button id="gemini-stock-btn" class="gemini-button w-full mt-4 py-2 rounded-lg shadow transition">✨ Get Restock Suggestions</button>
+                </div>
+                <div id="tab-content-my-sales" role="tabpanel" class="mt-6 hidden"></div>
+                <div id="tab-content-all-sales" role="tabpanel" class="mt-6 hidden"></div>
+                <div id="tab-content-waiters" role="tabpanel" class="mt-6 hidden">
+                    <button id="add-user-btn" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition">Add New Waiter</button>
+                    <hr class="my-6 border-gray-600">
+                    <h3 class="font-semibold text-gray-200 mb-2">Current Waiters</h3>
+                    <div id="user-list-management" class="space-y-2"></div>
+                </div>
+                 <div id="tab-content-categories" role="tabpanel" class="mt-6 hidden">
+                    <form id="add-category-form" class="space-y-4">
+                        <div><label for="category-name" class="block text-sm font-medium text-gray-300">New Category Name</label><input type="text" id="category-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition">Add Category</button>
+                    </form>
+                    <hr class="my-6 border-gray-600">
+                    <h3 class="font-semibold text-gray-200 mb-2">Existing Categories</h3>
+                    <div id="category-list-management" class="space-y-2"></div>
+                </div>
+                <div id="tab-content-settings" role="tabpanel" class="mt-6 hidden">
+                     <h3 class="font-semibold text-gray-200 mb-4">App Settings</h3>
+                     <div class="space-y-4">
+                        <div id="admin-settings">
+                            <div><label for="business-name" class="block text-sm font-medium text-gray-300">Business Name</label><input type="text" id="business-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600"></div>
+                            <div><label for="mpesa-till" class="block text-sm font-medium text-gray-300">M-PESA Till Number</label><input type="text" id="mpesa-till" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600"></div>
+                            <button id="save-settings-btn" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition mt-4">Save Settings</button>
+                            <hr class="border-gray-600 my-4">
+                        </div>
+                        <h3 class="font-semibold text-gray-200 mb-2">Security</h3>
+                        <button id="change-my-password-btn" class="w-full bg-gray-700 text-white py-2 rounded-lg shadow hover:bg-gray-800 transition">Change My Password</button>
+                        <hr class="border-gray-600 my-4">
+                        <div id="waiter-settings">
+                             <h3 class="font-semibold text-gray-200 mb-2">Account</h3>
+                             <button id="delete-my-account-btn" class="w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition">Delete My Account</button>
+                             <hr class="border-gray-600 my-4">
+                        </div>
+                        <div class="p-4 bg-yellow-900/20 border-l-4 border-yellow-500 text-yellow-300 rounded-r-lg" role="alert"><p class="font-bold">KRA eTIMS Compliance</p><p class="text-sm">An eTIMS integration would be added here.</p></div>
+                        <div id="admin-danger-zone">
+                            <button id="clear-data-btn" class="w-full bg-red-800 text-white py-2 rounded-lg shadow hover:bg-red-900 transition mt-2">Clear All App Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Purpose Modal -->
+    <div id="modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <h2 id="modal-title" class="text-xl font-bold mb-4 text-gray-100">Modal Title</h2>
+            <div id="modal-body"><p>Modal content goes here.</p></div>
+            <div id="modal-footer" class="mt-6 flex justify-end space-x-4">
+                <button id="modal-close-btn" class="bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500">Close</button>
+                <button id="modal-confirm-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Print Preview Modal -->
+    <div id="print-preview-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-4 text-gray-100">Print Preview</h2>
+            <div id="print-preview-area" class="bg-white p-4 border rounded-md overflow-y-auto max-h-96">
+                <!-- Receipt content will be injected here -->
+            </div>
+            <div class="mt-6 flex justify-end space-x-4">
+                <button id="print-preview-close" class="bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500">Cancel</button>
+                <button id="print-preview-copy" class="bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600">Print Copy</button>
+                <button id="print-preview-final" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Print Original</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Date Range Modal -->
+    <div id="report-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-4 text-gray-100">Select Report Period</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="start-date" class="block text-sm font-medium text-gray-300">Start Date</label>
+                    <input type="date" id="start-date" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600 text-gray-200 rounded-md">
+                </div>
+                <div>
+                    <label for="end-date" class="block text-sm font-medium text-gray-300">End Date</label>
+                    <input type="date" id="end-date" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600 text-gray-200 rounded-md">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-4">
+                <button id="report-modal-close" class="bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500">Cancel</button>
+                <button id="generate-report-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Generate Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Print Area -->
+    <div id="print-area" class="hidden"></div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- STATE MANAGEMENT ---
+        let state = {
+            products: [], cart: [], sales: [], openBills: [],
+            settings: { businessName: 'BarSoko POS', mpesaTill: '' },
+            users: [], currentUser: null, currentBillId: null,
+            categories: [],
+            shifts: [] // NEW: To store historical shift data
+        };
+        const DB_KEY = 'barSokoStateV13.4'; // Updated DB Key for new version
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        // --- DOM ELEMENTS ---
+        const appDiv = document.getElementById('app');
+        const loginScreen = document.getElementById('login-screen');
+        const passwordChangeScreen = document.getElementById('password-change-screen');
+        const loginForm = document.getElementById('login-form');
+        const passwordChangeForm = document.getElementById('password-change-form');
+        const usernameSelect = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('login-error');
+        const waiterInfo = document.getElementById('waiter-info');
+        const logoutBtn = document.getElementById('logout-btn');
+        const productGrid = document.getElementById('product-grid');
+        const productCategoriesNav = document.getElementById('product-categories');
+        const cartDiv = document.getElementById('cart');
+        const cartTotalSpan = document.getElementById('cart-total');
+        const payCashBtn = document.getElementById('pay-cash-btn');
+        const payMpesaBtn = document.getElementById('pay-mpesa-btn');
+        const payCardBtn = document.getElementById('pay-card-btn');
+        const clearCartBtn = document.getElementById('clear-cart-btn');
+        const saveBillBtn = document.getElementById('save-bill-btn');
+        const printBillBtn = document.getElementById('print-bill-btn');
+        const openBillsContainer = document.getElementById('open-bills-container');
+        const currentBillInfo = document.getElementById('current-bill-info');
+        const tabsContainer = document.getElementById('tabs');
+        const shiftManagementPanel = document.getElementById('shift-management-panel');
+        const tabContents = {
+            dashboard: document.getElementById('tab-content-dashboard'),
+            products: document.getElementById('tab-content-products'),
+            'my-sales': document.getElementById('tab-content-my-sales'),
+            'all-sales': document.getElementById('tab-content-all-sales'),
+            waiters: document.getElementById('tab-content-waiters'),
+            categories: document.getElementById('tab-content-categories'),
+            settings: document.getElementById('tab-content-settings'),
+        };
+        const statusIndicator = document.getElementById('status-indicator');
+        const syncBtn = document.getElementById('sync-btn');
+        const syncIcon = document.getElementById('sync-icon');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalFooter = document.getElementById('modal-footer');
+        
+        // --- PRINT PREVIEW MODAL ELEMENTS ---
+        const printPreviewModal = document.getElementById('print-preview-modal');
+        const printPreviewArea = document.getElementById('print-preview-area');
+        const printPreviewCloseBtn = document.getElementById('print-preview-close');
+        const printPreviewCopyBtn = document.getElementById('print-preview-copy');
+        const printPreviewFinalBtn = document.getElementById('print-preview-final');
+        const printArea = document.getElementById('print-area');
+
+        // --- FORM & BUTTON ELEMENTS ---
+        const addProductForm = document.getElementById('add-product-form');
+        const addUserBtn = document.getElementById('add-user-btn');
+        const addCategoryForm = document.getElementById('add-category-form');
+        const saveSettingsBtn = document.getElementById('save-settings-btn');
+        const clearDataBtn = document.getElementById('clear-data-btn');
+        const changeMyPasswordBtn = document.getElementById('change-my-password-btn');
+        const deleteMyAccountBtn = document.getElementById('delete-my-account-btn');
+        const geminiStockBtn = document.getElementById('gemini-stock-btn');
+        const productListManagement = document.getElementById('product-list-management');
+        const userListManagement = document.getElementById('user-list-management');
+        const categoryListManagement = document.getElementById('category-list-management');
+
+
+        // --- LOCAL STORAGE & LIVE SYNC ---
+        function saveData() { 
+            localStorage.setItem(DB_KEY, JSON.stringify(state)); 
         }
-      });
+        function loadData() {
+            const savedState = localStorage.getItem(DB_KEY);
+            if (savedState) {
+                state = JSON.parse(savedState);
+                if (!state.shifts) { // Backwards compatibility for older data
+                    state.shifts = [];
+                }
+            } else {
+                // Default initial state if nothing is in localStorage
+                state.categories = ['Beers', 'Ciders', 'Spirits', 'Wines', 'Soft Drinks', 'Other'];
+                state.products = [ 
+                    // Beers
+                    { id: Date.now() + 1, name: 'Tusker Lager', price: 300, stock: 120, category: 'Beers', isFavorite: true },
+                    { id: Date.now() + 2, name: 'Tusker Lite', price: 300, stock: 96, category: 'Beers', isFavorite: false },
+                    { id: Date.now() + 3, name: 'Tusker Malt', price: 300, stock: 72, category: 'Beers', isFavorite: false },
+                    { id: Date.now() + 4, name: 'White Cap Lager', price: 300, stock: 80, category: 'Beers', isFavorite: true },
+                    { id: Date.now() + 5, name: 'White Cap Lite', price: 300, stock: 60, category: 'Beers', isFavorite: false },
+                    { id: Date.now() + 6, name: 'Guinness', price: 350, stock: 96, category: 'Beers', isFavorite: true },
+                    { id: Date.now() + 7, name: 'Pilsner', price: 280, stock: 120, category: 'Beers', isFavorite: false },
+                    { id: Date.now() + 8, name: 'Balozi', price: 280, stock: 72, category: 'Beers', isFavorite: false },
+                    { id: Date.now() + 9, name: 'Heineken', price: 350, stock: 48, category: 'Beers', isFavorite: false },
+
+                    // Ciders & RTDs
+                    { id: Date.now() + 40, name: 'Tusker Cider', price: 350, stock: 60, category: 'Ciders', isFavorite: false },
+                    { id: Date.now() + 41, name: 'Snapp', price: 350, stock: 60, category: 'Ciders', isFavorite: false },
+                    { id: Date.now() + 42, name: 'Smirnoff Ice Black', price: 350, stock: 72, category: 'Ciders', isFavorite: false },
+                    { id: Date.now() + 43, name: 'Guarana', price: 300, stock: 72, category: 'Ciders', isFavorite: false },
+                    
+                    // Spirits (Tots)
+                    { id: Date.now() + 10, name: 'Gilbeys Gin (Tot)', price: 150, stock: 500, category: 'Spirits', isFavorite: true },
+                    { id: Date.now() + 11, name: 'Smirnoff Vodka (Tot)', price: 150, stock: 500, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 12, name: 'Captain Morgan (Tot)', price: 180, stock: 400, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 13, name: 'Johnnie Walker Red (Tot)', price: 250, stock: 300, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 14, name: 'Kenya Cane (KC) (Tot)', price: 120, stock: 600, category: 'Spirits', isFavorite: true },
+                    { id: Date.now() + 15, name: 'Chrome Gin (Tot)', price: 120, stock: 500, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 16, name: 'Hunters Choice (Tot)', price: 150, stock: 300, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 50, name: 'Jameson (Tot)', price: 350, stock: 200, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 51, name: 'Jack Daniels (Tot)', price: 400, stock: 200, category: 'Spirits', isFavorite: false },
+
+                    // Spirits (Bottles)
+                    { id: Date.now() + 60, name: 'Gilbeys Gin (750ml)', price: 1800, stock: 24, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 61, name: 'Smirnoff Vodka (750ml)', price: 1800, stock: 24, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 62, name: 'Captain Morgan (750ml)', price: 2200, stock: 12, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 63, name: 'Johnnie Walker Red (750ml)', price: 2500, stock: 12, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 64, name: 'Kenya Cane (KC) (750ml)', price: 1000, stock: 36, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 65, name: 'Chrome Gin (750ml)', price: 1000, stock: 36, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 66, name: 'Jameson (750ml)', price: 3500, stock: 12, category: 'Spirits', isFavorite: false },
+                    { id: Date.now() + 67, name: 'Jack Daniels (750ml)', price: 4000, stock: 12, category: 'Spirits', isFavorite: false },
+
+                    // Wines
+                    { id: Date.now() + 17, name: '4th Street (Glass)', price: 300, stock: 100, category: 'Wines', isFavorite: false },
+                    { id: Date.now() + 18, name: 'Four Cousins (Glass)', price: 350, stock: 100, category: 'Wines', isFavorite: true },
+                    { id: Date.now() + 70, name: '4th Street Red (750ml)', price: 1200, stock: 24, category: 'Wines', isFavorite: false },
+                    { id: Date.now() + 71, name: 'Four Cousins Red (750ml)', price: 1500, stock: 24, category: 'Wines', isFavorite: false },
+                    
+                    // Soft Drinks & Mixers
+                    { id: Date.now() + 19, name: 'Coca-Cola', price: 100, stock: 200, category: 'Soft Drinks', isFavorite: true },
+                    { id: Date.now() + 20, name: 'Fanta Orange', price: 100, stock: 150, category: 'Soft Drinks', isFavorite: false },
+                    { id: Date.now() + 21, name: 'Sprite', price: 100, stock: 150, category: 'Soft Drinks', isFavorite: false },
+                    { id: Date.now() + 22, name: 'Keringet Water', price: 100, stock: 200, category: 'Soft Drinks', isFavorite: false },
+                    { id: Date.now() + 23, name: 'Red Bull', price: 350, stock: 50, category: 'Soft Drinks', isFavorite: false },
+                    { id: Date.now() + 80, name: 'Tonic Water', price: 100, stock: 100, category: 'Soft Drinks', isFavorite: false },
+                    { id: Date.now() + 81, name: 'Soda Water', price: 100, stock: 100, category: 'Soft Drinks', isFavorite: false }
+                ];
+                state.users = [{ id: 1, name: 'Admin', password: 'admin', isAdmin: true, mustChangePassword: true, activeShift: { id: null, start: null, sales: [] } }];
+                state.shifts = [];
+                saveData();
+            }
+        }
+        
+        window.addEventListener('storage', (event) => {
+            if (event.key === DB_KEY) {
+                console.log('Live Sync: Data changed in another tab. Reloading state.');
+                loadData();
+                if (state.currentUser) {
+                    renderAll();
+                }
+            }
+        });
+        
+        // --- AUTHENTICATION & SHIFT MANAGEMENT ---
+        function populateUserSelect() { usernameSelect.innerHTML = ''; state.users.filter(u => !u.isDeleted).forEach(user => { const option = document.createElement('option'); option.value = user.id; option.textContent = user.name; usernameSelect.appendChild(option); }); }
+        function handleLogin(e) { e.preventDefault(); const userId = parseInt(usernameSelect.value); const password = passwordInput.value; const user = state.users.find(u => u.id === userId); if (user && user.password === password) { if (user.mustChangePassword) { showPasswordChangeScreen(user); } else { login(user); } } else { loginError.classList.remove('hidden'); } }
+        function login(user) { state.currentUser = user; loginScreen.classList.add('hidden'); appDiv.classList.remove('hidden'); waiterInfo.textContent = `User: ${state.currentUser.name}`; loginForm.reset(); loginError.classList.add('hidden'); renderAll(); saveData(); }
+        function logout() { state.currentUser = null; loginScreen.classList.remove('hidden'); appDiv.classList.add('hidden'); saveData(); }
+        function showPasswordChangeScreen(user) {
+            state.currentUser = user;
+            loginScreen.classList.add('hidden');
+            passwordChangeScreen.classList.remove('hidden');
+        }
+        function handleForcePasswordChange(e) {
+            e.preventDefault();
+            const newPw = document.getElementById('new-password').value;
+            const confirmPw = document.getElementById('confirm-password').value;
+            const errorP = document.getElementById('pw-error');
+            if (!newPw || newPw.length < 4) { errorP.textContent = 'Password must be at least 4 characters.'; errorP.classList.remove('hidden'); return; }
+            if (newPw !== confirmPw) { errorP.textContent = 'Passwords do not match.'; errorP.classList.remove('hidden'); return; }
+            
+            const user = state.users.find(u => u.id === state.currentUser.id);
+            user.password = newPw;
+            user.mustChangePassword = false;
+            passwordChangeScreen.classList.add('hidden');
+            passwordChangeForm.reset();
+            login(user);
+        }
+        function startShift() { 
+            const user = state.users.find(u => u.id === state.currentUser.id);
+            if (user.activeShift && user.activeShift.id) { 
+                showModal('Shift Active', 'A shift is already active.', () => true, false);
+                return; 
+            } 
+            user.activeShift = { id: Date.now(), start: new Date().toISOString(), sales: [] }; 
+            saveData(); 
+            renderShiftControls(); 
+        }
+        function endShift() { 
+            const user = state.users.find(u => u.id === state.currentUser.id);
+            if (!user.activeShift || !user.activeShift.id) { 
+                showModal('No Active Shift', 'There is no active shift to end.', () => true, false);
+                return; 
+            } 
+            
+            const shiftReport = { 
+                ...user.activeShift, 
+                end: new Date().toISOString(),
+                waiterId: user.id,
+                waiterName: user.name
+            };
+            
+            state.shifts.push(shiftReport); // Save shift to history
+            
+            showModal('Shift Ended', `<p>Shift ended successfully. A full report would be generated here.</p><p>Total Sales This Shift: Ksh ${shiftReport.sales.reduce((t,s) => t + s.total, 0).toFixed(2)}</p>`, () => true, false); 
+            
+            user.activeShift = { id: null, start: null, sales: [] }; 
+            saveData(); 
+            renderShiftControls(); 
+        }
+
+        // --- MODAL ---
+        function showModal(title, content, onConfirm, showConfirm = true) {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content;
+            
+            modalFooter.innerHTML = `
+                <button id="modal-close-btn-dynamic" class="bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500">Close</button>
+                <button id="modal-confirm-btn-dynamic" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Confirm</button>
+            `;
+            
+            const newConfirmBtn = document.getElementById('modal-confirm-btn-dynamic');
+            const newCloseBtn = document.getElementById('modal-close-btn-dynamic');
+
+            newConfirmBtn.classList.toggle('hidden', !showConfirm);
+            newConfirmBtn.onclick = () => { if(onConfirm()) { hideModal(); } };
+            newCloseBtn.onclick = hideModal;
+
+            modal.classList.remove('hidden');
+            const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            firstElement?.focus();
+            
+            modal.onkeydown = (e) => {
+                if (e.key === 'Escape') hideModal();
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) { if (document.activeElement === firstElement) { lastElement.focus(); e.preventDefault(); } } 
+                    else { if (document.activeElement === lastElement) { firstElement.focus(); e.preventDefault(); } }
+                }
+            };
+        }
+        function hideModal() { modal.classList.add('hidden'); }
+        
+        // --- DYNAMIC CONTENT RENDERING ---
+        function renderTabs() {
+            tabsContainer.innerHTML = '';
+            const allTabs = [
+                { key: 'dashboard', label: 'Dashboard', adminOnly: true },
+                { key: 'products', label: 'Products', adminOnly: false },
+                { key: 'my-sales', label: 'My Sales', adminOnly: false },
+                { key: 'all-sales', label: 'All Sales', adminOnly: true },
+                { key: 'waiters', label: 'Waiters', adminOnly: true },
+                { key: 'categories', label: 'Categories', adminOnly: true },
+                { key: 'settings', label: 'Settings', adminOnly: false },
+            ];
+            const visibleTabs = allTabs.filter(tab => !tab.adminOnly || (state.currentUser && state.currentUser.isAdmin));
+            visibleTabs.forEach((tab) => {
+                const button = document.createElement('button');
+                button.setAttribute('role', 'tab');
+                button.setAttribute('data-tab', tab.key);
+                button.className = `tab-btn`;
+                button.textContent = tab.label;
+                tabsContainer.appendChild(button);
+            });
+        }
+        
+        // --- UI RENDERING FUNCTIONS ---
+        function renderDashboard() {
+            if (!state.currentUser || !state.currentUser.isAdmin) return;
+            const activeWaiters = state.users.filter(u => !u.isAdmin && u.activeShift && u.activeShift.id);
+            const activeWaitersHtml = activeWaiters.length > 0 ? activeWaiters.map(u => `<li>${u.name} (since ${new Date(u.activeShift.start).toLocaleTimeString()})</li>`).join('') : '<li>No waiters currently on shift.</li>';
+            const today = new Date().toISOString().slice(0, 10);
+            const todaysSales = state.sales.filter(s => s.date.startsWith(today));
+            const totalSales = todaysSales.reduce((sum, s) => sum + s.total, 0);
+            const salesByWaiter = todaysSales.reduce((acc, sale) => { acc[sale.waiter] = (acc[sale.waiter] || 0) + sale.total; return acc; }, {});
+            const salesByWaiterHtml = Object.entries(salesByWaiter).length > 0 ? Object.entries(salesByWaiter).map(([name, total]) => `<li>${name}: Ksh ${total.toFixed(2)}</li>`).join('') : '<li>No sales yet today.</li>';
+            tabContents.dashboard.innerHTML = `<div class="space-y-4"><div class="bg-gray-700 p-4 rounded-lg"><h3 class="font-semibold text-blue-300">Active Waiters</h3><ul class="list-disc list-inside text-sm text-blue-400">${activeWaitersHtml}</ul></div><div class="bg-gray-700 p-4 rounded-lg"><h3 class="font-semibold text-gray-200">Today's Total Sales</h3><p class="text-3xl font-bold text-green-400">Ksh ${totalSales.toFixed(2)}</p></div><div class="bg-gray-700 p-4 rounded-lg"><h3 class="font-semibold text-gray-200">Sales by Waiter (Live)</h3><ul class="list-disc list-inside text-sm text-gray-300">${salesByWaiterHtml}</ul></div><button data-action="gemini-summary" class="gemini-button w-full mt-2 py-2 rounded-lg shadow transition">✨ Get Daily Summary</button></div>`;
+        }
+        function renderProductsGrid(category = 'Favorites') {
+            let productsToShow = state.products;
+            if (category === 'Favorites') {
+                const salesCounts = state.sales.flatMap(s => s.items).reduce((acc, item) => { acc[item.productId] = (acc[item.productId] || 0) + item.quantity; return acc; }, {});
+                productsToShow = state.products.filter(p => p.isFavorite || salesCounts[p.id]).sort((a,b) => (salesCounts[b.id] || 0) - (salesCounts[a.id] || 0));
+            } else if (category !== 'All') {
+                productsToShow = state.products.filter(p => p.category === category);
+            }
+            productGrid.innerHTML = ''; 
+            if (productsToShow.length === 0) { productGrid.innerHTML = `<p class="text-gray-400 col-span-full">No products in this category.</p>`; return; } 
+            productsToShow.forEach(p => { const disabled = p.stock <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700 hover:border-blue-500'; const stockInfo = p.stock <= 0 ? '<span class="text-red-500 font-bold">Out of Stock</span>' : `<span class="text-gray-400">${p.stock} in stock</span>`; const productCard = document.createElement('div'); productCard.className = `border rounded-lg p-4 text-center cursor-pointer transition border-gray-700 bg-gray-800 ${disabled}`; productCard.setAttribute('role', 'gridcell'); productCard.setAttribute('tabindex', p.stock > 0 ? '0' : '-1'); productCard.innerHTML = `<h4 class="font-semibold text-gray-100">${p.name}</h4><p class="text-lg font-bold text-blue-400">Ksh ${p.price.toFixed(2)}</p><p class="text-xs">${stockInfo}</p>`; if (p.stock > 0) { productCard.addEventListener('click', () => addToCart(p.id)); productCard.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') addToCart(p.id); }); } productGrid.appendChild(productCard); }); 
+        }
+        function renderProductCategoriesNav() {
+            const categories = ['Favorites', 'All', ...state.categories];
+            productCategoriesNav.innerHTML = categories.map((cat, index) => `<button data-category="${cat}" class="category-btn px-3 py-1 border rounded-full text-sm border-gray-600 ${index === 0 ? 'active' : ''}">${cat === 'Favorites' ? '⭐ ' : ''}${cat}</button>`).join('');
+        }
+        function populateCategoryDropdowns() {
+            const selects = document.querySelectorAll('#product-category, #edit-product-category');
+            selects.forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = state.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+                select.value = currentVal;
+            });
+        }
+        function renderProductListManagement() {
+            const canManage = state.currentUser.isAdmin;
+            tabContents.products.querySelector('#add-product-form').classList.toggle('hidden', !canManage);
+            tabContents.products.querySelector('#gemini-stock-btn').classList.toggle('hidden', !canManage);
+            productListManagement.innerHTML = state.products.map(p => `<div class="flex justify-between items-center bg-gray-700 p-2 rounded-md"><div><p class="font-medium">${p.name}</p><p class="text-sm text-gray-400">Ksh ${p.price.toFixed(2)} - Stock: ${p.stock} - Cat: ${p.category}</p></div><div class="flex items-center space-x-3 ${canManage ? '' : 'hidden'}"><button data-id="${p.id}" data-action="toggle-favorite" aria-label="Toggle Favorite for ${p.name}" class="text-gray-400 hover:text-yellow-500"><i class="${p.isFavorite ? 'fas' : 'far'} fa-star"></i></button><button data-id="${p.id}" data-action="edit-product" aria-label="Edit ${p.name}" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button data-id="${p.id}" data-action="delete-product" aria-label="Delete ${p.name}" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></div></div>`).join('') || `<p class="text-gray-400 text-sm">No products added yet.</p>`;
+        }
+        function renderCart() { 
+            cartDiv.innerHTML = ''; 
+            const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); 
+            const enableBtns = total > 0; 
+            if (state.cart.length === 0) { 
+                cartDiv.innerHTML = `<p class="text-gray-400">Your cart is empty.</p>`; 
+            } else { 
+                state.cart.forEach(item => { 
+                    const cartItemDiv = document.createElement('div'); 
+                    cartItemDiv.className = 'flex justify-between items-center bg-gray-700 p-2 rounded-md'; 
+                    cartItemDiv.innerHTML = `<div><p class="font-medium">${item.name}</p><p class="text-sm text-gray-400">Ksh ${item.price.toFixed(2)}</p></div><div class="flex items-center space-x-3"><button data-id="${item.productId}" data-action="decrease-qty" aria-label="Decrease quantity of ${item.name}" class="bg-gray-600 w-6 h-6 rounded-full">-</button><span class="font-bold">${item.quantity}</span><button data-id="${item.productId}" data-action="increase-qty" aria-label="Increase quantity of ${item.name}" class="bg-gray-600 w-6 h-6 rounded-full">+</button></div>`; 
+                    cartDiv.appendChild(cartItemDiv); 
+                }); 
+            } 
+            cartTotalSpan.textContent = `Ksh ${total.toFixed(2)}`; 
+            payCashBtn.disabled = !enableBtns; 
+            payMpesaBtn.disabled = !enableBtns; 
+            payCardBtn.disabled = !enableBtns;
+            saveBillBtn.disabled = !enableBtns; 
+            clearCartBtn.disabled = !(state.cart.length > 0 || state.currentBillId); 
+            printBillBtn.disabled = !state.currentBillId; 
+        }
+        function renderSalesHistory(forCurrentUser = false) {
+            const targetList = forCurrentUser ? tabContents['my-sales'] : tabContents['all-sales'];
+            targetList.innerHTML = '';
+            let salesToShow = forCurrentUser ? state.sales.filter(s => s.waiter === state.currentUser.name) : state.sales;
+            if (salesToShow.length === 0) { targetList.innerHTML = `<p class="text-gray-400 text-sm">No sales recorded yet.</p>`; return; } 
+            const reversedSales = [...salesToShow].reverse(); 
+            targetList.innerHTML = reversedSales.map(sale => { 
+                const itemsHtml = sale.items.map(item => `<li>${item.quantity} x ${item.name}</li>`).join(''); 
+                const transactionCode = sale.transactionCode ? `<p class="text-xs text-gray-400">${sale.paymentMethod}: ${sale.transactionCode}</p>` : ''; 
+                let paymentMethodClass = 'bg-green-500';
+                if (sale.paymentMethod === 'M-PESA') paymentMethodClass = 'bg-emerald-500';
+                if (sale.paymentMethod === 'Card') paymentMethodClass = 'bg-blue-500';
+                return `<div class="bg-gray-700 p-3 rounded-md border border-gray-600"><div class="flex justify-between items-start"><div><p class="font-bold">${sale.waiter}</p><p class="text-sm text-gray-400">${new Date(sale.date).toLocaleString()}</p>${transactionCode}</div><div class="text-right"><p class="font-semibold text-lg text-green-400">Ksh ${sale.total.toFixed(2)}</p><p class="text-xs font-medium text-white px-2 py-1 rounded-full ${paymentMethodClass}">${sale.paymentMethod}</p></div></div><ul class="text-sm list-disc list-inside mt-2 text-gray-300">${itemsHtml}</ul></div>`; 
+            }).join(''); 
+            if (forCurrentUser === false) { targetList.insertAdjacentHTML('afterbegin', `<button id="download-report-btn" class="w-full mb-4 bg-gray-600 text-white py-2 rounded-lg shadow hover:bg-gray-700 transition">Download Sales Report (CSV)</button>`); }
+        }
+        function renderUserListManagement() {
+            const activeUsers = state.users.filter(u => !u.isDeleted);
+            const deletedUsers = state.users.filter(u => u.isDeleted);
+            userListManagement.innerHTML = activeUsers.map(u => { const adminBadge = u.isAdmin ? '<span class="text-xs bg-blue-200 text-blue-800 font-semibold px-2 py-0.5 rounded-full">Admin</span>' : ''; return `<div class="flex justify-between items-center bg-gray-700 p-2 rounded-md"><div><p class="font-medium">${u.name} ${adminBadge}</p></div><button data-id="${u.id}" data-action="delete-user" aria-label="Delete ${u.name}" class="text-red-500 hover:text-red-700 ${u.isAdmin ? 'hidden' : ''}"><i class="fas fa-trash"></i></button></div>`; }).join('');
+            if (deletedUsers.length > 0) {
+                userListManagement.innerHTML += `<hr class="my-6 border-gray-600"><h3 class="font-semibold text-gray-200 mb-2">Deleted Waiters</h3>`;
+                userListManagement.innerHTML += deletedUsers.map(u => `<div class="flex justify-between items-center bg-red-900/20 p-2 rounded-md opacity-60"><div><p class="font-medium italic">${u.name}</p></div><div class="space-x-4"><button data-id="${u.id}" data-action="restore-user" aria-label="Restore ${u.name}" class="text-green-500 hover:text-green-400"><i class="fas fa-undo"></i></button><button data-id="${u.id}" data-action="hard-delete-user" aria-label="Permanently Delete ${u.name}" class="text-red-700 hover:text-red-900"><i class="fas fa-fire"></i></button></div></div>`).join('');
+            }
+        }
+        function renderSettings() { 
+            const isAdmin = state.currentUser.isAdmin;
+            document.getElementById('admin-settings').classList.toggle('hidden', !isAdmin);
+            document.getElementById('admin-danger-zone').classList.toggle('hidden', !isAdmin);
+            document.getElementById('waiter-settings').classList.toggle('hidden', isAdmin);
+            if (isAdmin) { document.getElementById('business-name').value = state.settings.businessName || ''; document.getElementById('mpesa-till').value = state.settings.mpesaTill || ''; }
+            document.querySelector('h1').textContent = state.settings.businessName || 'BarSoko POS'; 
+        }
+        function renderOpenBills() {
+            const billsToShow = state.currentUser.isAdmin ? state.openBills : state.openBills.filter(b => b.waiterId === state.currentUser.id);
+            openBillsContainer.innerHTML = ''; 
+            const newBillButton = document.createElement('button'); 
+            newBillButton.className = 'border-2 border-dashed border-gray-600 rounded-lg p-4 text-center text-gray-400 hover:bg-gray-700 hover:border-gray-500 transition'; 
+            newBillButton.innerHTML = `<i class="fas fa-plus text-2xl"></i><p class="font-semibold mt-1">New Bill</p>`; 
+            newBillButton.addEventListener('click', createNewBill); 
+            openBillsContainer.appendChild(newBillButton); 
+            billsToShow.forEach(bill => { 
+                const billButton = document.createElement('button'); 
+                const isSelected = state.currentBillId === bill.id; 
+                billButton.className = `border rounded-lg p-4 text-center cursor-pointer transition relative ${isSelected ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-700 border-gray-600 hover:border-blue-400'}`; 
+                const waiterNameHtml = state.currentUser.isAdmin ? `<p class="text-xs opacity-70">${bill.waiterName}</p>` : '';
+                const statusLabel = `<span class="absolute top-1 right-1 text-xs bg-red-500 text-white font-semibold px-2 py-0.5 rounded-full">Unpaid</span>`;
+                billButton.innerHTML = `${statusLabel}<p class="font-bold text-lg">${bill.name}</p><p class="text-sm">Ksh ${bill.items.reduce((t,i) => t + (i.price * i.quantity), 0).toFixed(2)}</p>${waiterNameHtml}`; 
+                billButton.addEventListener('click', () => openBill(bill.id)); 
+                openBillsContainer.appendChild(billButton); 
+            }); 
+        }
+        function renderShiftControls() {
+            const user = state.users.find(u => u.id === state.currentUser.id);
+            if (!user) return;
+            const shiftStatus = user.activeShift && user.activeShift.id ? `Shift Active since ${new Date(user.activeShift.start).toLocaleTimeString()}` : 'No active shift.';
+            const shiftButton = user.activeShift && user.activeShift.id ? `<button data-action="end-shift" class="w-full bg-red-600 text-white py-2 rounded-lg">End Shift</button>` : `<button data-action="start-shift" class="w-full bg-green-600 text-white py-2 rounded-lg">Start Shift</button>`;
+            shiftManagementPanel.innerHTML = `<h3 class="font-semibold text-blue-300">Shift Management</h3><p class="text-sm text-blue-400 mb-2">${shiftStatus}</p>${shiftButton}`;
+        }
+        function renderCategoryManagement() {
+            categoryListManagement.innerHTML = state.categories.map(cat => `
+                <div class="flex justify-between items-center bg-gray-700 p-2 rounded-md">
+                    <p class="font-medium">${cat}</p>
+                    <div class="flex items-center space-x-3">
+                        <button data-cat="${cat}" data-action="edit-category" aria-label="Edit ${cat}" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                        <button data-cat="${cat}" data-action="delete-category" aria-label="Delete ${cat}" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') || `<p class="text-gray-400 text-sm">No categories added yet.</p>`;
+        }
+        
+        function updateAdminControlsVisibility() {
+            if (!state.currentUser) return;
+            const isAdmin = state.currentUser.isAdmin;
+            addUserBtn.style.display = isAdmin ? 'block' : 'none';
+            userListManagement.querySelectorAll('button[data-action="delete-user"], button[data-action="hard-delete-user"]').forEach(btn => {
+                btn.style.display = isAdmin ? 'inline-flex' : 'none';
+            });
+        }
+
+        // --- CORE LOGIC FUNCTIONS ---
+        function addProduct(e) { e.preventDefault(); const name = document.getElementById('product-name').value; const price = parseFloat(document.getElementById('product-price').value); const stock = parseInt(document.getElementById('product-stock').value); const category = document.getElementById('product-category').value; if (name && !isNaN(price) && !isNaN(stock)) { state.products.push({ id: Date.now(), name, price, stock, category, isFavorite: false }); saveData(); renderProductListManagement(); renderProductsGrid(); addProductForm.reset(); } }
+        function deleteProduct(productId) { state.products = state.products.filter(p => p.id !== productId); saveData(); renderProductListManagement(); renderProductsGrid(); }
+        function toggleFavorite(productId) { const product = state.products.find(p => p.id === productId); if (product) { product.isFavorite = !product.isFavorite; } saveData(); renderProductListManagement(); }
+        function addUser() { if (!state.currentUser || !state.currentUser.isAdmin) return; const content = `<div><label for="new-user-name-modal" class="block text-sm font-medium text-gray-300">New Waiter Name</label><input type="text" id="new-user-name-modal" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="temp-password" class="block text-sm font-medium text-gray-300">Temporary Password</label><input type="text" id="temp-password" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><p id="addUserError" class="text-red-500 text-sm mt-1 hidden"></p>`; showModal('Add New Waiter', content, () => { const nameInput = document.getElementById('new-user-name-modal'); const tempPasswordInput = document.getElementById('temp-password'); const errorP = document.getElementById('addUserError'); const name = nameInput.value.trim(); const tempPassword = tempPasswordInput.value.trim(); if (!name || !tempPassword) { errorP.textContent = 'Both fields are required.'; errorP.classList.remove('hidden'); return false; } state.users.push({ id: Date.now(), name, password: tempPassword, isAdmin: false, mustChangePassword: true, activeShift: { id: null, start: null, sales: [] } }); saveData(); renderUserListManagement(); populateUserSelect(); return true; }); }
+        
+        function deleteUser(userId, hardDelete = false) {
+            const userToDelete = state.users.find(u => u.id === userId);
+            if (userToDelete && userToDelete.isAdmin) {
+                showModal('Action Denied', 'The Admin user cannot be deleted.', () => true, false);
+                return;
+            }
+            if (userToDelete) {
+                if (hardDelete) {
+                    state.users = state.users.filter(u => u.id !== userId);
+                } else {
+                    userToDelete.isDeleted = true;
+                }
+                saveData();
+                renderUserListManagement();
+                populateUserSelect();
+            }
+        }
+
+        function restoreUser(userId) {
+            const userToRestore = state.users.find(u => u.id === userId);
+            if (userToRestore) {
+                userToRestore.isDeleted = false;
+                saveData();
+                renderUserListManagement();
+                populateUserSelect();
+            }
+        }
+
+        function addToCart(productId) {
+            if (!state.currentBillId) {
+                showModal('Action Required', 'Please create a new bill or select an existing bill before adding items to the cart.', () => true, false);
+                return;
+            }
+            const product = state.products.find(p => p.id === productId); if (!product || product.stock <= 0) return; const cartItem = state.cart.find(item => item.productId === productId); if (cartItem) { if (product.stock > cartItem.quantity) { cartItem.quantity++; } else { showModal('Out of Stock', 'No more stock available for this item.', () => true, false); } } else { state.cart.push({ productId: product.id, name: product.name, price: product.price, quantity: 1 }); } renderCart(); }
+        function updateQuantity(productId, change) { const cartItem = state.cart.find(item => item.productId === productId); if (!cartItem) return; const product = state.products.find(p => p.id === productId); if (change > 0) { if (product.stock > cartItem.quantity) { cartItem.quantity += change; } else { showModal('Out of Stock', 'No more stock available for this item.', () => true, false); } } else { cartItem.quantity += change; } if (cartItem.quantity <= 0) { state.cart = state.cart.filter(item => item.productId !== productId); } renderCart(); }
+        function clearCart() { if(state.currentBillId) { state.openBills = state.openBills.filter(t => t.id !== state.currentBillId); } state.cart = []; state.currentBillId = null; currentBillInfo.textContent = ''; saveData(); renderCart(); renderOpenBills(); }
+        function processSale(paymentMethod, transactionCode = '') {
+            const user = state.users.find(u => u.id === state.currentUser.id);
+            if (state.cart.length === 0) return;
+            const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            state.cart.forEach(cartItem => { const product = state.products.find(p => p.id === cartItem.productId); if (product) { product.stock -= cartItem.quantity; } });
+            const shiftId = (user && user.activeShift && user.activeShift.id) ? user.activeShift.id : 'N/A';
+            const sale = { id: Date.now(), items: [...state.cart], total: total, paymentMethod: paymentMethod, transactionCode: transactionCode, date: new Date().toISOString(), waiter: state.currentUser.name, shiftId: shiftId };
+            state.sales.push(sale);
+            if (user && user.activeShift && user.activeShift.id) { user.activeShift.sales.push(sale); }
+            if (state.currentBillId) { state.openBills = state.openBills.filter(bill => bill.id !== state.currentBillId); }
+            state.cart = []; state.currentBillId = null; currentBillInfo.textContent = '';
+            saveData();
+            renderAll();
+            let modalContent = `<div class="text-center"><i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i><p class="text-2xl font-bold">Transaction Closed</p><p class="text-gray-300">Paid Ksh ${sale.total.toFixed(2)} via ${paymentMethod}</p></div>`;
+            showModal('Sale Complete!', modalContent, () => true, false);
+        }
+        function preSaleShiftCheck(callback) {
+            const user = state.users.find(u => u.id === state.currentUser.id);
+            if (!user.activeShift || !user.activeShift.id) {
+                showModal('Start Shift?', 'You must start a shift to record this sale properly. What would you like to do?', () => { startShift(); callback(); return true; }, true);
+                document.getElementById('modal-confirm-btn-dynamic').textContent = 'Start Shift & Sell';
+                document.getElementById('modal-close-btn-dynamic').textContent = 'Cancel Sale';
+                return false;
+            }
+            return true;
+        }
+        function promptMpesaPayment() { if (!preSaleShiftCheck(promptMpesaPayment)) return; const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); let modalContent = `<p class="text-center text-gray-400">Total Amount</p><p class="text-3xl font-bold text-center text-green-400 mb-4">Ksh ${total.toFixed(2)}</p><p class="text-center font-semibold">Customer to pay to Till No: <br><strong class="text-xl">${state.settings.mpesaTill || 'Not Set'}</strong></p><hr class="my-4 border-gray-600"><div><label for="mpesa-code" class="block text-sm font-medium text-gray-300">Enter M-PESA Transaction Code</label><input type="text" id="mpesa-code" class="mt-1 block w-full border p-2 uppercase bg-gray-700 border-gray-600" placeholder="e.g., RGA123ABC4" required><p id="mpesa-error" class="text-red-500 text-sm mt-1 hidden">Code cannot be empty.</p></div>`; showModal('M-PESA Payment', modalContent, () => { const codeInput = document.getElementById('mpesa-code'); const errorP = document.getElementById('mpesa-error'); const mpesaCode = codeInput.value.trim(); if (mpesaCode) { processSale('M-PESA', mpesaCode.toUpperCase()); return true; } else { errorP.classList.remove('hidden'); codeInput.focus(); return false; } }); }
+        function promptCardPayment() { if (!preSaleShiftCheck(promptCardPayment)) return; const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); let modalContent = `<p class="text-center text-gray-400">Total Amount</p><p class="text-3xl font-bold text-center text-blue-400 mb-4">Ksh ${total.toFixed(2)}</p><p class="text-center font-semibold">Process payment on the physical card terminal.</p><hr class="my-4 border-gray-600"><div><label for="card-code" class="block text-sm font-medium text-gray-300">Enter Card Transaction Code / Ref No.</label><input type="text" id="card-code" class="mt-1 block w-full border p-2 uppercase bg-gray-700 border-gray-600" placeholder="e.g., 123456" required><p id="card-error" class="text-red-500 text-sm mt-1 hidden">Code cannot be empty.</p></div>`; showModal('Card Payment', modalContent, () => { const codeInput = document.getElementById('card-code'); const errorP = document.getElementById('card-error'); const cardCode = codeInput.value.trim(); if (cardCode) { processSale('Card', cardCode.toUpperCase()); return true; } else { errorP.classList.remove('hidden'); codeInput.focus(); return false; } }); }
+        function createNewBill() { const content = `<div><label for="bill-name" class="block text-sm font-medium text-gray-300">Enter Table Number or Customer Name</label><input type="text" id="bill-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" placeholder="e.g., Table 5" required></div>`; showModal('Create New Bill', content, () => { const name = document.getElementById('bill-name').value.trim(); if (name) { const newBill = { id: Date.now(), name: name, items: [], waiterId: state.currentUser.id, waiterName: state.currentUser.name }; state.openBills.push(newBill); openBill(newBill.id); saveData(); renderOpenBills(); return true; } return false; }); }
+        function openBill(billId) { state.currentBillId = billId; const bill = state.openBills.find(t => t.id === billId); state.cart = [...bill.items]; currentBillInfo.textContent = `Bill: ${bill.name}`; saveData(); renderCart(); renderOpenBills(); }
+        function saveToBill() { if (!state.currentBillId) { showModal('Action Required', 'Please create or select a bill first.', () => true, false); return; } if (state.cart.length === 0) { showModal('Empty Order', 'Add items to the order before saving.', () => true, false); return; } const bill = state.openBills.find(t => t.id === state.currentBillId); bill.items = [...state.cart]; state.cart = []; state.currentBillId = null; currentBillInfo.textContent = ''; saveData(); renderCart(); renderOpenBills(); }
+        function handleTabClick(e) { const clickedTabKey = e.currentTarget.dataset.tab; tabsContainer.querySelectorAll('button').forEach(tab => { const isSelected = tab.dataset.tab === clickedTabKey; tab.classList.toggle('active', isSelected); if (tabContents[tab.dataset.tab]) { tabContents[tab.dataset.tab].classList.toggle('hidden', !isSelected); } }); }
+        function handleSaveSettings() { state.settings.businessName = document.getElementById('business-name').value; state.settings.mpesaTill = document.getElementById('mpesa-till').value; saveData(); renderSettings(); showModal('Success', 'Settings saved!', () => true, false); }
+        function promptChangeOwnPassword() { const content = `<div><label for="current-password" class="block text-sm font-medium text-gray-300">Current Password</label><input type="password" id="current-password" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="new-password-modal" class="block text-sm font-medium text-gray-300">New Password</label><input type="password" id="new-password-modal" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="confirm-password-modal" class="block text-sm font-medium text-gray-300">Confirm New Password</label><input type="password" id="confirm-password-modal" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><p id="changePwError" class="text-red-500 text-sm mt-1 hidden"></p>`; showModal('Change Your Password', content, () => { const currentPw = document.getElementById('current-password').value; const newPw = document.getElementById('new-password-modal').value; const confirmPw = document.getElementById('confirm-password-modal').value; const errorP = document.getElementById('changePwError'); if (currentPw !== state.currentUser.password) { errorP.textContent = 'Current password is incorrect.'; errorP.classList.remove('hidden'); return false; } if (!newPw || newPw.length < 4) { errorP.textContent = 'New password must be at least 4 characters.'; errorP.classList.remove('hidden'); return false; } if (newPw !== confirmPw) { errorP.textContent = 'New passwords do not match.'; errorP.classList.remove('hidden'); return false; } const user = state.users.find(u => u.id === state.currentUser.id); user.password = newPw; saveData(); showModal('Success', 'Password changed successfully!', () => true, false); return true; }); }
+        function handleClearData() { showModal('Confirm Clear Data', 'This will delete ALL data. This action is permanent.', () => { localStorage.removeItem(DB_KEY); location.reload(); return true; }); }
+        function handleSelfDelete() { showModal('Confirm Account Deletion', 'Are you sure you want to delete your account? This action is permanent and you will be logged out.', () => { deleteUser(state.currentUser.id); logout(); return true; }); }
+        function updateOnlineStatus() { const online = navigator.onLine; statusIndicator.innerHTML = `<div class="w-3 h-3 ${online ? 'bg-green-500' : 'bg-red-500'} rounded-full animate-pulse"></div><span class="text-sm font-medium text-gray-400">${online ? 'Online' : 'Offline'}</span>`; }
+        function handleSync() { if (!navigator.onLine) { showModal("Offline", "You are offline. Connect to the internet to sync.", () => true, false); return; } syncIcon.classList.add('fa-spin'); syncBtn.disabled = true; setTimeout(() => { console.log("--- SIMULATING SYNC ---"); console.log("Data sent to server:", JSON.stringify({ sales: state.sales, products: state.products })); syncIcon.classList.remove('fa-spin'); syncBtn.disabled = false; showModal('Sync Complete', 'Your offline data has been backed up to the cloud.', () => true, false); }, 2000); }
+        
+        // --- REPORTING LOGIC ---
+        function promptForReportDates() {
+            const reportModal = document.getElementById('report-modal');
+            const endDateInput = document.getElementById('end-date');
+            const startDateInput = document.getElementById('start-date');
+
+            const today = new Date();
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+
+            endDateInput.value = today.toISOString().split('T')[0];
+            startDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+            
+            reportModal.classList.remove('hidden');
+        }
+
+        function downloadSalesReport(startDateStr, endDateStr) {
+            const startDate = new Date(startDateStr);
+            startDate.setHours(0, 0, 0, 0);
+
+            const endDate = new Date(endDateStr);
+            endDate.setHours(23, 59, 59, 999);
+
+            if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
+                showModal('Invalid Date Range', 'Please select a valid start and end date.', () => true, false);
+                return;
+            }
+
+            const salesToReport = state.sales.filter(s => {
+                const saleDate = new Date(s.date);
+                return saleDate >= startDate && saleDate <= endDate;
+            });
+            const shiftsToReport = state.shifts.filter(sh => {
+                const shiftDate = new Date(sh.start);
+                return shiftDate >= startDate && shiftDate <= endDate;
+            });
+
+            if (salesToReport.length === 0) {
+                showModal('No Data', 'No sales recorded in the selected period.', () => true, false);
+                return;
+            }
+            
+            const escapeCsvCell = (cell) => {
+                const stringCell = String(cell === null || cell === undefined ? '' : cell);
+                if (stringCell.includes(',') || stringCell.includes('"') || stringCell.includes('\n')) {
+                    return `"${stringCell.replace(/"/g, '""')}"`;
+                }
+                return stringCell;
+            };
+
+            // 1. Calculate Summaries
+            const totalSales = salesToReport.reduce((sum, s) => sum + s.total, 0);
+            const totalItemsSold = salesToReport.flatMap(s => s.items).reduce((sum, item) => sum + item.quantity, 0);
+
+            const productSales = salesToReport.flatMap(s => s.items).reduce((acc, item) => {
+                acc[item.name] = (acc[item.name] || 0) + item.quantity;
+                return acc;
+            }, {});
+            const topProduct = Object.entries(productSales).sort((a, b) => b[1] - a[1])[0] || ['N/A', 0];
+
+            const waiterSales = salesToReport.reduce((acc, sale) => {
+                acc[sale.waiter] = (acc[sale.waiter] || 0) + sale.total;
+                return acc;
+            }, {});
+            const topWaiter = Object.entries(waiterSales).sort((a, b) => b[1] - a[1])[0] || ['N/A', 0];
+            
+            // 2. Build Executive Summary CSV
+            let summaryCsv = `"Executive Summary for ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}"\n`;
+            summaryCsv += `"Metric", "Value"\n`;
+            summaryCsv += `"Total Sales (Ksh)", "${totalSales.toFixed(2)}"\n`;
+            summaryCsv += `"Total Items Sold", "${totalItemsSold}"\n`;
+            summaryCsv += `"Top Selling Product", "${topProduct[0]} (${topProduct[1]} units)"\n`;
+            summaryCsv += `"Top Performing Waiter", "${topWaiter[0]} (Ksh ${topWaiter[1].toFixed(2)})"\n`;
+            summaryCsv += `\n\n`; // Add spacing
+
+            // 3. Build Shift Attendance CSV
+            summaryCsv += `"Shift Attendance Report"\n`;
+            summaryCsv += `"Waiter", "Shift Start", "Shift End", "Total Sales in Shift (Ksh)"\n`;
+            shiftsToReport.forEach(shift => {
+                const shiftTotal = shift.sales.reduce((sum, s) => sum + s.total, 0);
+                const row = [
+                    shift.waiterName,
+                    new Date(shift.start).toLocaleString('en-GB'),
+                    shift.end ? new Date(shift.end).toLocaleString('en-GB') : 'Active',
+                    shiftTotal.toFixed(2)
+                ];
+                summaryCsv += row.map(escapeCsvCell).join(',') + '\n';
+            });
+            summaryCsv += `\n\n`; // Add spacing
+
+            // 4. Build Detailed Sales Log
+            const detailHeaders = [
+                'Sale ID', 'Date', 'Time', 'Waiter', 'Shift ID', 'Product Name', 'Category', 
+                'Quantity', 'Price Per Item (Ksh)', 'Total Item Price (Ksh)', 
+                'Payment Method', 'Transaction Code'
+            ];
+            let detailCsv = `"Detailed Sales Log"\n`;
+            detailCsv += detailHeaders.map(escapeCsvCell).join(',') + '\n';
+            salesToReport.forEach(sale => {
+                const saleDate = new Date(sale.date);
+                sale.items.forEach(item => {
+                    const product = state.products.find(p => p.id === item.productId) || { category: 'N/A' };
+                    const row = [
+                        sale.id,
+                        saleDate.toLocaleDateString('en-GB'),
+                        saleDate.toLocaleTimeString('en-US'),
+                        sale.waiter,
+                        sale.shiftId || 'N/A',
+                        item.name,
+                        product.category,
+                        item.quantity,
+                        item.price,
+                        item.price * item.quantity,
+                        sale.paymentMethod,
+                        sale.transactionCode || 'N/A'
+                    ];
+                    detailCsv += row.map(escapeCsvCell).join(',') + '\n';
+                });
+            });
+
+            // 5. Combine and Download
+            const fullCsvContent = summaryCsv + detailCsv;
+            const blob = new Blob([fullCsvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                const today = new Date().toISOString().slice(0, 10);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `BarSoko_Full_Report_${today}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+
+        // --- PRINTING LOGIC ---
+        function generateReceiptHtml(bill, isCopy = false) {
+            if (!bill) return '';
+            const total = bill.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const copyText = isCopy ? `<p style="text-align: center; font-weight: bold; margin: 10px 0;">*** COPY ***</p>` : '';
+
+            return `
+                <div style="font-family: 'Courier New', monospace; width: 280px; font-size: 12px; color: #000;">
+                    <h2 style="text-align: center; font-size: 16px; margin: 0 0 10px 0;">${state.settings.businessName}</h2>
+                    <p style="text-align: center; margin: 0;">Bill for: ${bill.name}</p>
+                    <p style="text-align: center; margin: 0;">Served by: ${bill.waiterName}</p>
+                    <p style="text-align: center; margin: 0; font-size: 10px;">${new Date().toLocaleString('en-GB')}</p>
+                    ${copyText}
+                    <hr style="border: none; border-top: 1px dashed #000; margin: 10px 0;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 2px;">Item</th>
+                                <th style="text-align: center; padding: 2px;">Qty</th>
+                                <th style="text-align: right; padding: 2px;">Price</th>
+                                <th style="text-align: right; padding: 2px;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${bill.items.map(item => `
+                                <tr>
+                                    <td style="padding: 2px; max-width: 140px; word-wrap: break-word;">${item.name}</td>
+                                    <td style="text-align: center; padding: 2px;">${item.quantity}</td>
+                                    <td style="text-align: right; padding: 2px;">${item.price.toFixed(0)}</td>
+                                    <td style="text-align: right; padding: 2px;">${(item.price * item.quantity).toFixed(0)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <hr style="border: none; border-top: 1px dashed #000; margin: 10px 0;">
+                    <div style="text-align: right; font-size: 16px; font-weight: bold;">
+                        <p style="margin: 0;">TOTAL: Ksh ${total.toFixed(2)}</p>
+                    </div>
+                    <p style="text-align: center; margin-top: 20px; font-size: 10px;">Thank you for your business!</p>
+                    <p style="text-align: center; margin: 0; font-size: 10px;">M-PESA Till: ${state.settings.mpesaTill || 'N/A'}</p>
+                </div>
+            `;
+        }
+
+        function handlePrintBill() {
+            if (!state.currentBillId) {
+                showModal("No Bill Selected", "Please select a bill to print.", () => true, false);
+                return;
+            }
+            const bill = state.openBills.find(b => b.id === state.currentBillId);
+            if (!bill) return;
+
+            const receiptHtml = generateReceiptHtml(bill, false);
+            printPreviewArea.innerHTML = receiptHtml;
+            printPreviewModal.classList.remove('hidden');
+        }
+
+        function promptEditProduct(product) { if (!product) return; const content = `<input type="hidden" id="edit-product-id" value="${product.id}"><div><label for="edit-product-name" class="block text-sm font-medium text-gray-300">Product Name</label><input type="text" id="edit-product-name" value="${product.name}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="edit-product-price" class="block text-sm font-medium text-gray-300">Price (Ksh)</label><input type="number" id="edit-product-price" value="${product.price}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div><div class="mt-2"><label for="edit-product-category" class="block text-sm font-medium text-gray-300">Category</label><select id="edit-product-category" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600"></select></div><div class="mt-2"><label for="edit-product-stock" class="block text-sm font-medium text-gray-300">Stock</label><input type="number" id="edit-product-stock" value="${product.stock}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div>`; showModal('Edit Product', content, () => { const id = parseInt(document.getElementById('edit-product-id').value); const name = document.getElementById('edit-product-name').value; const price = parseFloat(document.getElementById('edit-product-price').value); const category = document.getElementById('edit-product-category').value; const stock = parseInt(document.getElementById('edit-product-stock').value); const productToUpdate = state.products.find(p => p.id === id); if (productToUpdate) { productToUpdate.name = name; productToUpdate.price = price; productToUpdate.category = category; productToUpdate.stock = stock; saveData(); renderProductListManagement(); renderProductsGrid(); } return true; }); populateCategoryDropdowns(); document.getElementById('edit-product-category').value = product.category; }
+        
+        // --- CATEGORY MANAGEMENT ---
+        function addCategory(e) { e.preventDefault(); const nameInput = document.getElementById('category-name'); const name = nameInput.value.trim(); if (name && !state.categories.includes(name)) { state.categories.push(name); saveData(); renderCategoryManagement(); populateCategoryDropdowns(); renderProductCategoriesNav(); nameInput.value = ''; } else { showModal('Error', 'Category name cannot be empty or already exist.', () => true, false); } }
+        function editCategory(oldName) { const content = `<div><label for="edit-category-name" class="block text-sm font-medium">New Name for "${oldName}"</label><input type="text" id="edit-category-name" value="${oldName}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>`; showModal('Edit Category', content, () => { const newName = document.getElementById('edit-category-name').value.trim(); if (newName && !state.categories.includes(newName)) { state.products.forEach(p => { if (p.category === oldName) p.category = newName; }); const index = state.categories.indexOf(oldName); if (index > -1) state.categories[index] = newName; saveData(); renderAll(); return true; } else { showModal('Error', 'New name cannot be empty or already exist.', () => true, false); return false; } }); }
+        function deleteCategory(catName) { const productsInCategory = state.products.filter(p => p.category === catName).length; if (productsInCategory > 0) { showModal('Cannot Delete', `You cannot delete the "${catName}" category because ${productsInCategory} product(s) are still assigned to it. Please re-assign them first.`, () => true, false); return; } showModal('Confirm Deletion', `Are you sure you want to delete the "${catName}" category? This cannot be undone.`, () => { state.categories = state.categories.filter(c => c !== catName); saveData(); renderAll(); return true; }); }
+
+        // --- INITIALIZATION ---
+        function renderAll() {
+            if (!state.currentUser) return;
+            renderTabs();
+            const firstVisibleTab = tabsContainer.querySelector('button');
+            if (firstVisibleTab) {
+                const activeTab = tabsContainer.querySelector('button.active')?.dataset.tab || (state.currentUser.isAdmin ? 'dashboard' : firstVisibleTab.dataset.tab);
+                tabsContainer.querySelectorAll('button').forEach(tab => {
+                    const isSelected = tab.dataset.tab === activeTab;
+                    tab.classList.toggle('active', isSelected);
+                    if (tabContents[tab.dataset.tab]) {
+                        tabContents[tab.dataset.tab].classList.toggle('hidden', !isSelected);
+                    }
+                });
+            }
+            populateCategoryDropdowns();
+            renderDashboard();
+            renderProductCategoriesNav();
+            renderProductsGrid(document.querySelector('.category-btn.active')?.dataset.category || 'Favorites');
+            renderProductListManagement();
+            renderSalesHistory(false);
+            renderSalesHistory(true);
+            if (state.currentUser.isAdmin) {
+                renderUserListManagement();
+                renderCategoryManagement();
+            }
+            renderSettings();
+            renderCart();
+            renderOpenBills();
+            renderShiftControls();
+            updateAdminControlsVisibility();
+        }
+
+        // --- EVENT LISTENERS (ATTACHED ONCE) ---
+        loginForm.addEventListener('submit', handleLogin);
+        passwordChangeForm.addEventListener('submit', handleForcePasswordChange);
+        logoutBtn.addEventListener('click', logout);
+        syncBtn.addEventListener('click', handleSync);
+        saveBillBtn.addEventListener('click', saveToBill);
+        clearCartBtn.addEventListener('click', clearCart);
+        addProductForm.addEventListener('submit', addProduct);
+        addCategoryForm.addEventListener('submit', addCategory);
+        addUserBtn.addEventListener('click', addUser);
+        userListManagement.addEventListener('click', e => { 
+            if (!state.currentUser || !state.currentUser.isAdmin) return;
+            const target = e.target.closest('button'); 
+            if (!target) return; 
+            const userId = parseInt(target.dataset.id); 
+            const action = target.dataset.action;
+            if (action === 'delete-user') { 
+                showModal('Confirm Deletion', 'Are you sure?', () => { deleteUser(userId); return true; }); 
+            } 
+            if (action === 'hard-delete-user') { 
+                showModal('PERMANENTLY DELETE', 'This cannot be undone.', () => { deleteUser(userId, true); return true; }); 
+            }
+            if (action === 'restore-user') {
+                restoreUser(userId);
+            }
+        });
+
+        saveSettingsBtn.addEventListener('click', handleSaveSettings);
+        clearDataBtn.addEventListener('click', handleClearData);
+        changeMyPasswordBtn.addEventListener('click', promptChangeOwnPassword);
+        deleteMyAccountBtn.addEventListener('click', handleSelfDelete);
+        geminiStockBtn.addEventListener('click', () => {
+            const prompt = `I run a bar in Kenya. Current stock: ${state.products.map(p => `${p.name}: ${p.stock} units`).join(', ')}. Give me a prioritized restock list and suggest one new popular Kenyan drink to add.`;
+            showModal('AI Suggestions', `<strong>Restock Priority:</strong><ul><li>Pilsner</li><li>Guinness</li></ul><br><strong>New Drink Suggestion:</strong><br>Consider adding **Kenya Cane (KC)**. It's a very popular and versatile local spirit that can be sold by the tot or as a cocktail base.`, ()=>true, false);
+        });
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        
+        tabContents.dashboard.addEventListener('click', e => { 
+            if (e.target.closest('button')?.dataset.action === 'gemini-summary') { 
+                const today = new Date().toISOString().slice(0, 10); 
+                const todaysSales = state.sales.filter(s => s.date.startsWith(today)); 
+                if (todaysSales.length === 0) { showModal("No Sales", "No sales today to summarize.", () => true, false); return; } 
+                const total = todaysSales.reduce((s, t) => s + t.total, 0); 
+                const topW = Object.entries(todaysSales.reduce((acc, sale) => { acc[sale.waiter] = (acc[sale.waiter] || 0) + sale.total; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]; 
+                showModal('AI Daily Summary', `Great work today!<ul><li>Total sales reached <strong>Ksh ${total.toFixed(2)}</strong>.</li><li>Shout-out to <strong>${topW ? topW[0] : 'the team'}</strong> for being the top earner!</li></ul><p>Keep up the fantastic momentum!</p>`, ()=>true, false);
+            } 
+        });
+        
+        const reportModal = document.getElementById('report-modal');
+        const reportModalCloseBtn = document.getElementById('report-modal-close');
+        const generateReportBtn = document.getElementById('generate-report-btn');
+
+        tabContents['all-sales'].addEventListener('click', e => {
+            if (e.target.id === 'download-report-btn') {
+                promptForReportDates();
+            }
+        });
+
+        reportModalCloseBtn.addEventListener('click', () => {
+            reportModal.classList.add('hidden');
+        });
+
+        generateReportBtn.addEventListener('click', () => {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            downloadSalesReport(startDate, endDate);
+            reportModal.classList.add('hidden');
+        });
+
+        productListManagement.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const id = parseInt(target.dataset.id); const action = target.dataset.action; if (action === 'delete-product') { showModal('Confirm Deletion', 'Are you sure?', () => { deleteProduct(id); return true; }); } if (action === 'toggle-favorite') { toggleFavorite(id); } if (action === 'edit-product') { const product = state.products.find(p => p.id === id); promptEditProduct(product); } });
+        categoryListManagement.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const cat = target.dataset.cat; if (target.dataset.action === 'edit-category') { editCategory(cat); } if (target.dataset.action === 'delete-category') { deleteCategory(cat); } });
+        cartDiv.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const productId = parseInt(target.dataset.id); const action = target.dataset.action; if (action === 'increase-qty') updateQuantity(productId, 1); if (action === 'decrease-qty') updateQuantity(productId, -1); });
+        tabsContainer.addEventListener('click', e => { const target = e.target.closest('button'); if(target) handleTabClick({currentTarget: target}); });
+        productCategoriesNav.addEventListener('click', e => { const target = e.target.closest('button'); if (target) { productCategoriesNav.querySelectorAll('button').forEach(btn => btn.classList.remove('active')); target.classList.add('active'); renderProductsGrid(target.dataset.category); } });
+        shiftManagementPanel.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const action = target.dataset.action; if (action === 'start-shift') startShift(); if (action === 'end-shift') endShift(); });
+        payCashBtn.addEventListener('click', () => { if (preSaleShiftCheck(() => processSale('Cash'))) processSale('Cash'); });
+        payMpesaBtn.addEventListener('click', promptMpesaPayment);
+        payCardBtn.addEventListener('click', promptCardPayment);
+        printBillBtn.addEventListener('click', handlePrintBill);
+        
+        // --- PRINT PREVIEW LISTENERS ---
+        printPreviewCloseBtn.addEventListener('click', () => {
+            printPreviewModal.classList.add('hidden');
+        });
+
+        printPreviewFinalBtn.addEventListener('click', () => {
+            const bill = state.openBills.find(b => b.id === state.currentBillId);
+            if (!bill) return;
+            printArea.innerHTML = generateReceiptHtml(bill, false);
+            window.print();
+            printPreviewModal.classList.add('hidden');
+        });
+
+        printPreviewCopyBtn.addEventListener('click', () => {
+            const bill = state.openBills.find(b => b.id === state.currentBillId);
+            if (!bill) return;
+            printArea.innerHTML = generateReceiptHtml(bill, true);
+            window.print();
+        });
+
+        // Initial Load
+        loadData();
+        populateUserSelect();
+        updateOnlineStatus();
+    });
     </script>
-  </body>
+</body>
 </html>
