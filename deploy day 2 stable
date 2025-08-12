@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarSoko POS - Professional V15.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background-color: #1f2937; padding: 2rem; border-radius: 0.5rem; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
+        
+        /* New Login Screen Styles */
+        #login-screen-v2 {
+            background: #111827; /* bg-gray-900 */
+        }
+        .login-card {
+            background-color: #1f2937; /* bg-gray-800 */
+            border: 1px solid #374151; /* border-gray-700 */
+        }
+        .login-tab {
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            border-bottom: 3px solid transparent;
+            color: #9ca3af; /* text-gray-400 */
+            transition: all 0.2s ease-in-out;
+        }
+        .login-tab:hover {
+            color: #f9fafb; /* text-gray-50 */
+        }
+        .login-tab.active {
+            color: #3b82f6; /* text-blue-500 */
+            border-bottom-color: #3b82f6;
+            font-weight: 600;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+
+        /* General App Styles */
+        #tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid #374151; }
+        .tab-btn { padding: 0.5rem 1rem; border: none; background: none; cursor: pointer; font-weight: 500; color: #9ca3af; border-bottom: 2px solid transparent; transition: all 0.2s ease-in-out; }
+        .tab-btn:hover { color: #f9fafb; }
+        .tab-btn.active { border-bottom-color: #3b82f6; color: #3b82f6; font-weight: 600; }
+        .category-btn.active { background-color: #2563eb; color: white; font-weight: 600; }
+        .gemini-button { background: linear-gradient(90deg, #4f46e5, #c026d3); border: none; color: white; }
+        .gemini-button:hover { background: linear-gradient(90deg, #4338ca, #a21caf); }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+            .modal-backdrop, #app, #login-screen-v2 { display: none !important; visibility: hidden !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <!-- NEW LOGIN SCREEN -->
+    <div id="login-screen-v2" class="min-h-screen flex flex-col md:flex-row items-center justify-center p-4 bg-gray-900 bg-cover bg-center" style="background-image: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.95)), url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=2574&auto=format&fit=crop');">
+        <div class="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            <!-- Branding Section -->
+            <div class="text-center md:text-left">
+                <h1 id="app-logo" class="text-5xl md:text-6xl font-extrabold text-white">
+                    <i class="fas fa-wine-glass-alt text-blue-500"></i> BarSoko
+                </h1>
+                <p id="app-tagline" class="mt-4 text-xl md:text-2xl text-gray-300">The Smart Point of Sale for Modern Bars & Restaurants.</p>
+            </div>
+            
+            <!-- Login Card -->
+            <div class="login-card w-full max-w-md p-8 rounded-xl shadow-2xl">
+                <!-- Tabs -->
+                <div class="flex border-b border-gray-700 mb-6">
+                    <div id="admin-login-tab" class="login-tab active flex-1 text-center">Admin</div>
+                    <div id="waiter-login-tab" class="login-tab flex-1 text-center">Waiter</div>
+                </div>
+
+                <!-- Admin Login Form -->
+                <div id="admin-login-form-section" class="form-section active">
+                    <form id="admin-login-form" class="space-y-6">
+                        <div>
+                            <label for="admin-email" class="block text-sm font-medium text-gray-300">Email Address</label>
+                            <input type="email" id="admin-email" autocomplete="email" required class="mt-1 block w-full border border-gray-600 bg-gray-700 rounded-md shadow-sm p-3 text-lg text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="admin-password" class="block text-sm font-medium text-gray-300">Password</label>
+                            <input type="password" id="admin-password" autocomplete="current-password" required class="mt-1 block w-full border border-gray-600 bg-gray-700 rounded-md shadow-sm p-3 text-lg text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <p id="admin-login-error" class="text-red-400 text-sm hidden"></p>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition">Sign In as Admin</button>
+                        <div class="text-sm text-center">
+                            <a href="#" id="forgot-password-link" class="font-medium text-blue-400 hover:text-blue-300">Forgot password?</a>
+                        </div>
+                        <div id="create-admin-section" class="text-sm text-center hidden">
+                             <a href="#" id="create-admin-link" class="font-medium text-gray-400 hover:text-gray-200">Create Admin Account</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Waiter Login Form -->
+                <div id="waiter-login-form-section" class="form-section">
+                    <form id="waiter-login-form" class="space-y-6">
+                        <div>
+                            <label for="waiter-username" class="block text-sm font-medium text-gray-300">Select Your Name</label>
+                            <select id="waiter-username" required class="mt-1 block w-full border border-gray-600 bg-gray-700 rounded-md shadow-sm p-3 text-lg text-gray-200 focus:ring-blue-500 focus:border-blue-500"></select>
+                        </div>
+                        <div>
+                            <label for="waiter-password" class="block text-sm font-medium text-gray-300">Password</label>
+                            <input type="password" id="waiter-password" required class="mt-1 block w-full border border-gray-600 bg-gray-700 rounded-md shadow-sm p-3 text-lg text-gray-200 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <p id="waiter-login-error" class="text-red-400 text-sm hidden">Invalid name or password.</p>
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition">Sign In as Waiter</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Main App (Initially Hidden) -->
+    <div id="app" class="max-w-7xl mx-auto p-4 hidden">
+        <!-- Header -->
+        <header class="bg-gray-800 rounded-lg shadow p-4 mb-4 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-100">BarSoko POS</h1>
+                <p id="waiter-info" class="text-sm text-gray-400">Welcome!</p>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div id="status-indicator" class="flex items-center space-x-2"></div>
+                <button id="sync-btn" aria-label="Sync Data" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition flex items-center space-x-2">
+                    <i id="sync-icon" class="fas fa-sync"></i>
+                    <span class="hidden sm:inline">Sync</span>
+                </button>
+                <button id="logout-btn" aria-label="Log out" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition flex items-center space-x-2">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="lg:col-span-2 space-y-4">
+                <!-- Open Bills Section -->
+                <div class="bg-gray-800 rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-100">Open Bills</h2>
+                    <div id="open-bills-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3"></div>
+                </div>
+
+                <!-- Point of Sale Section -->
+                <div class="bg-gray-800 rounded-lg shadow p-6">
+                    <div class="flex justify-between items-center mb-4">
+                         <h2 class="text-xl font-semibold text-gray-100">Point of Sale</h2>
+                         <div id="current-bill-info" class="text-lg font-bold text-blue-400"></div>
+                    </div>
+                    <div id="product-categories" class="flex flex-wrap gap-2 mb-4"></div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="product-grid" role="grid"></div>
+                    <hr class="my-6 border-gray-700">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-100">Current Order</h3>
+                    <div id="cart" class="space-y-2"></div>
+                    <div id="cart-summary" class="mt-6 pt-4 border-t-2 border-dashed border-gray-700">
+                        <div class="flex justify-between items-center text-2xl font-bold">
+                            <span id="total-label">Total:</span><span id="cart-total">Ksh 0.00</span>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <button id="save-bill-btn" class="bg-orange-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-orange-600 transition disabled:bg-gray-400" disabled><i class="fas fa-save mr-2"></i>Save</button>
+                            <button id="pay-cash-btn" class="bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition disabled:bg-gray-400" disabled><i class="fas fa-money-bill-wave mr-2"></i>Cash</button>
+                            <button id="pay-mpesa-btn" class="bg-emerald-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-emerald-600 transition disabled:bg-gray-400 flex items-center justify-center" disabled><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1280px-M-PESA_LOGO-01.svg.png" class="h-5 mr-2" alt="M-PESA"> M-Pesa</button>
+                            <button id="pay-card-btn" class="bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition disabled:bg-gray-400" disabled><i class="fas fa-credit-card mr-2"></i>Card</button>
+                        </div>
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+                            <button id="clear-cart-btn" class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition disabled:bg-gray-400" disabled>Clear/Close Bill</button>
+                            <button id="print-bill-btn" class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition disabled:bg-gray-400" disabled><i class="fas fa-print mr-2"></i>Print Bill</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Management Tabs -->
+            <div class="bg-gray-800 rounded-lg shadow p-6">
+                 <!-- Shift Management Panel -->
+                <div id="shift-management-panel" class="bg-gray-700 p-4 rounded-lg mb-6"></div>
+                <div class="mb-6">
+                    <nav id="tabs" role="tablist"></nav>
+                </div>
+                <!-- Tab Content Panels -->
+                <div id="tab-content-dashboard" role="tabpanel" class="mt-6 hidden"></div>
+                <div id="tab-content-products" role="tabpanel" class="mt-6 hidden">
+                    <form id="add-product-form" class="space-y-4">
+                        <div><label for="product-name" class="block text-sm font-medium text-gray-300">Product Name</label><input type="text" id="product-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>
+                        <div><label for="product-price" class="block text-sm font-medium text-gray-300">Price (Ksh)</label><input type="number" id="product-price" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div>
+                        <div>
+                            <label for="product-category" class="block text-sm font-medium text-gray-300">Category</label>
+                            <select id="product-category" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600"></select>
+                        </div>
+                        <div><label for="product-stock" class="block text-sm font-medium text-gray-300">Initial Stock</label><input type="number" id="product-stock" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition">Add Product</button>
+                    </form>
+                    <hr class="my-6 border-gray-600">
+                    <h3 class="font-semibold text-gray-200 mb-2">Existing Products</h3>
+                    <div id="product-list-management" class="space-y-2"></div>
+                    <button id="gemini-stock-btn" class="gemini-button w-full mt-4 py-2 rounded-lg shadow transition">✨ Get Restock Suggestions</button>
+                </div>
+                <div id="tab-content-my-sales" role="tabpanel" class="mt-6 hidden"></div>
+                <div id="tab-content-all-sales" role="tabpanel" class="mt-6 hidden"></div>
+                <div id="tab-content-waiters" role="tabpanel" class="mt-6 hidden">
+                    <button id="add-user-btn" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition">Add New Waiter</button>
+                    <hr class="my-6 border-gray-600">
+                    <h3 class="font-semibold text-gray-200 mb-2">Current Waiters</h3>
+                    <div id="user-list-management" class="space-y-2"></div>
+                </div>
+                 <div id="tab-content-categories" role="tabpanel" class="mt-6 hidden">
+                    <form id="add-category-form" class="space-y-4">
+                        <div><label for="category-name" class="block text-sm font-medium text-gray-300">New Category Name</label><input type="text" id="category-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition">Add Category</button>
+                    </form>
+                    <hr class="my-6 border-gray-600">
+                    <h3 class="font-semibold text-gray-200 mb-2">Existing Categories</h3>
+                    <div id="category-list-management" class="space-y-2"></div>
+                </div>
+                <div id="tab-content-settings" role="tabpanel" class="mt-6 hidden">
+                    <!-- ENHANCED SETTINGS PANEL -->
+                    <div class="space-y-6">
+                        <!-- Security Section -->
+                        <div id="security-settings-section">
+                            <h3 class="text-lg font-semibold text-gray-200 mb-3 border-b border-gray-700 pb-2">Security</h3>
+                            <button id="change-my-password-btn" class="w-full bg-gray-700 text-white py-2 rounded-lg shadow hover:bg-gray-600 transition">Change My Password</button>
+                        </div>
+
+                        <!-- Business Setup Section -->
+                        <div id="business-settings-section">
+                            <h3 class="text-lg font-semibold text-gray-200 mb-3 border-b border-gray-700 pb-2">Business Setup</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="business-name" class="block text-sm font-medium text-gray-300">Business Name</label>
+                                    <input type="text" id="business-name" placeholder="e.g., The Watering Hole" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600 rounded-md">
+                                </div>
+                                <div>
+                                    <label for="mpesa-till" class="block text-sm font-medium text-gray-300">M-PESA Till Number</label>
+                                    <input type="text" id="mpesa-till" placeholder="e.g., 123456" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600 rounded-md">
+                                    <p id="till-error" class="text-red-500 text-sm mt-1 hidden"></p>
+                                </div>
+                                <button id="save-settings-btn" class="w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition mt-2">Save Settings</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Reporting Section -->
+                        <div id="reporting-section">
+                             <h3 class="text-lg font-semibold text-gray-200 mb-3 border-b border-gray-700 pb-2">Reporting</h3>
+                             <p class="text-sm text-gray-400 mb-3">Download a comprehensive sales and performance report for the last 90 days.</p>
+                             <button id="download-90-day-report-btn" class="w-full bg-teal-600 text-white py-2 rounded-lg shadow hover:bg-teal-700 transition flex items-center justify-center space-x-2">
+                                <i class="fas fa-file-csv"></i>
+                                <span>Download 90-Day Report (CSV)</span>
+                             </button>
+                        </div>
+
+                        <!-- Data Management Section -->
+                        <div id="data-management-section">
+                            <h3 class="text-lg font-semibold text-red-400 mb-3 border-b border-red-800 pb-2">Danger Zone</h3>
+                            <p class="text-sm text-gray-400 mb-3">This will permanently delete all sales, shifts, and open bills. Product lists and user accounts will not be affected.</p>
+                            <button id="clear-transactions-btn" class="w-full bg-red-800 text-white py-2 rounded-lg shadow hover:bg-red-900 transition">Clear Transactional Data</button>
+                        </div>
+
+                        <!-- Waiter-specific account deletion -->
+                        <div id="waiter-settings" class="hidden">
+                             <h3 class="text-lg font-semibold text-gray-200 mb-3 border-b border-gray-700 pb-2">My Account</h3>
+                             <button id="delete-my-account-btn" class="w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition">Delete My Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Purpose Modal -->
+    <div id="modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <h2 id="modal-title" class="text-xl font-bold mb-4 text-gray-100">Modal Title</h2>
+            <div id="modal-body"><p>Modal content goes here.</p></div>
+            <div id="modal-footer" class="mt-6 flex justify-end space-x-4">
+                <button id="modal-close-btn" class="bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500">Close</button>
+                <button id="modal-confirm-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Print Preview Modal -->
+    <div id="print-preview-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-4 text-gray-100">Print Preview</h2>
+            <div id="print-preview-area" class="bg-white p-4 border rounded-md overflow-y-auto max-h-96">
+                <!-- Receipt content will be injected here -->
+            </div>
+            <div class="mt-6 flex justify-end space-x-4">
+                <button id="print-preview-close" class="bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500">Cancel</button>
+                <button id="print-preview-copy" class="bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600">Print Copy</button>
+                <button id="print-preview-final" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Print Original</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Print Area -->
+    <div id="print-area" class="hidden"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            sendPasswordResetEmail,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+        // --- CONFIGURATION ---
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcLP_igZJ3Sz0CDqBu6r0O4Fb9hn6aF9c",
+            authDomain: "barsoko-e99f1.firebaseapp.com",
+            projectId: "barsoko-e99f1",
+            storageBucket: "barsoko-e99f1.appspot.com", // Corrected storage bucket URL
+            messagingSenderId: "205771329503",
+            appId: "1:205771329503:web:611f442545876024693e6a",
+            measurementId: "G-QVVJMGEQ3V"
+        };
+        
+        // This flag controls whether the "Create Admin Account" link is visible.
+        // Set to 'true' for initial setup, then 'false' for production.
+        const allowAdminCreation = true; 
+
+        // Initialize Firebase
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+
+
+        // --- MAIN APP SCRIPT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE MANAGEMENT ---
+            let state = {
+                products: [], cart: [], sales: [], openBills: [],
+                settings: { businessName: 'BarSoko POS', mpesaTill: '' },
+                users: [], currentUser: null, currentBillId: null,
+                categories: [],
+                shifts: []
+            };
+            const DB_KEY = 'barSokoStateV15.1';
+
+            // --- DOM ELEMENTS ---
+            const appDiv = document.getElementById('app');
+            const loginScreen = document.getElementById('login-screen-v2');
+            
+            // New Login Form Elements
+            const adminLoginTab = document.getElementById('admin-login-tab');
+            const waiterLoginTab = document.getElementById('waiter-login-tab');
+            const adminLoginFormSection = document.getElementById('admin-login-form-section');
+            const waiterLoginFormSection = document.getElementById('waiter-login-form-section');
+            const adminLoginForm = document.getElementById('admin-login-form');
+            const waiterLoginForm = document.getElementById('waiter-login-form');
+            const waiterUsernameSelect = document.getElementById('waiter-username');
+            const waiterPasswordInput = document.getElementById('waiter-password');
+            const waiterLoginError = document.getElementById('waiter-login-error');
+            const adminLoginError = document.getElementById('admin-login-error');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            const createAdminSection = document.getElementById('create-admin-section');
+            const createAdminLink = document.getElementById('create-admin-link');
+            
+            const waiterInfo = document.getElementById('waiter-info');
+            const logoutBtn = document.getElementById('logout-btn');
+            const productGrid = document.getElementById('product-grid');
+            const productCategoriesNav = document.getElementById('product-categories');
+            const cartDiv = document.getElementById('cart');
+            const cartTotalSpan = document.getElementById('cart-total');
+            const payCashBtn = document.getElementById('pay-cash-btn');
+            const payMpesaBtn = document.getElementById('pay-mpesa-btn');
+            const payCardBtn = document.getElementById('pay-card-btn');
+            const clearCartBtn = document.getElementById('clear-cart-btn');
+            const saveBillBtn = document.getElementById('save-bill-btn');
+            const printBillBtn = document.getElementById('print-bill-btn');
+            const openBillsContainer = document.getElementById('open-bills-container');
+            const currentBillInfo = document.getElementById('current-bill-info');
+            const tabsContainer = document.getElementById('tabs');
+            const shiftManagementPanel = document.getElementById('shift-management-panel');
+            const tabContents = {
+                dashboard: document.getElementById('tab-content-dashboard'),
+                products: document.getElementById('tab-content-products'),
+                'my-sales': document.getElementById('tab-content-my-sales'),
+                'all-sales': document.getElementById('tab-content-all-sales'),
+                waiters: document.getElementById('tab-content-waiters'),
+                categories: document.getElementById('tab-content-categories'),
+                settings: document.getElementById('tab-content-settings'),
+            };
+            const statusIndicator = document.getElementById('status-indicator');
+            const syncBtn = document.getElementById('sync-btn');
+            const syncIcon = document.getElementById('sync-icon');
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalFooter = document.getElementById('modal-footer');
+            
+            const printPreviewModal = document.getElementById('print-preview-modal');
+            const printPreviewArea = document.getElementById('print-preview-area');
+            const printPreviewCloseBtn = document.getElementById('print-preview-close');
+            const printPreviewCopyBtn = document.getElementById('print-preview-copy');
+            const printPreviewFinalBtn = document.getElementById('print-preview-final');
+            const printArea = document.getElementById('print-area');
+
+            const addProductForm = document.getElementById('add-product-form');
+            const addUserBtn = document.getElementById('add-user-btn');
+            const addCategoryForm = document.getElementById('add-category-form');
+            const geminiStockBtn = document.getElementById('gemini-stock-btn');
+            const productListManagement = document.getElementById('product-list-management');
+            const userListManagement = document.getElementById('user-list-management');
+            const categoryListManagement = document.getElementById('category-list-management');
+            
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
+            const clearTransactionsBtn = document.getElementById('clear-transactions-btn');
+            const changeMyPasswordBtn = document.getElementById('change-my-password-btn');
+            const deleteMyAccountBtn = document.getElementById('delete-my-account-btn');
+            const download90DayReportBtn = document.getElementById('download-90-day-report-btn');
+
+
+            // --- LOCAL STORAGE & DATA INIT ---
+            function saveData() { 
+                localStorage.setItem(DB_KEY, JSON.stringify(state)); 
+            }
+            function loadData() {
+                const savedState = localStorage.getItem(DB_KEY);
+                if (savedState) {
+                    state = JSON.parse(savedState);
+                    if (!state.shifts) state.shifts = [];
+                    if (!state.settings) state.settings = { businessName: 'BarSoko POS', mpesaTill: '' };
+                    if (!state.users.find(u => u.isAdmin)) {
+                        // This case is a fallback, but admin creation should be handled via UI
+                        state.users.push({ id: 1, name: 'Admin', email: 'admin@example.com', password: 'admin', isAdmin: true, mustChangePassword: false, activeShift: { id: null, start: null, sales: [] } });
+                    }
+                } else {
+                    // Default initial state if nothing is in localStorage
+                    state.categories = ['Beers', 'Ciders', 'Spirits', 'Wines', 'Soft Drinks', 'Other'];
+                    state.products = [ 
+                        { id: Date.now() + 1, name: 'Tusker Lager', price: 300, stock: 120, category: 'Beers', isFavorite: true },
+                        { id: Date.now() + 6, name: 'Guinness', price: 350, stock: 96, category: 'Beers', isFavorite: true },
+                        { id: Date.now() + 10, name: 'Gilbeys Gin (Tot)', price: 150, stock: 500, category: 'Spirits', isFavorite: true },
+                        { id: Date.now() + 19, name: 'Coca-Cola', price: 100, stock: 200, category: 'Soft Drinks', isFavorite: true },
+                    ];
+                    state.users = [
+                        // Admin user is now created via Firebase Auth UI
+                        { id: Date.now(), name: 'John', password: '1234', isAdmin: false, mustChangePassword: true, activeShift: { id: null, start: null, sales: [] } }
+                    ];
+                    state.shifts = [];
+                    saveData();
+                }
+            }
+            
+            window.addEventListener('storage', (event) => {
+                if (event.key === DB_KEY) {
+                    console.log('Live Sync: Data changed in another tab. Reloading state.');
+                    loadData();
+                    if (state.currentUser) {
+                        renderAll();
+                    }
+                }
+            });
+            
+            // --- AUTHENTICATION & LOGIN ---
+            function populateWaiterSelect() { 
+                waiterUsernameSelect.innerHTML = ''; 
+                state.users.filter(u => !u.isAdmin && !u.isDeleted).forEach(user => { 
+                    const option = document.createElement('option'); 
+                    option.value = user.id; 
+                    option.textContent = user.name; 
+                    waiterUsernameSelect.appendChild(option); 
+                }); 
+            }
+
+            function handleWaiterLogin(e) { 
+                e.preventDefault(); 
+                const userId = parseInt(waiterUsernameSelect.value); 
+                const password = waiterPasswordInput.value; 
+                const user = state.users.find(u => u.id === userId); 
+                if (user && user.password === password) { 
+                    login(user); 
+                } else { 
+                    waiterLoginError.classList.remove('hidden'); 
+                } 
+            }
+
+            function handleAdminLogin(e) {
+                e.preventDefault();
+                const email = document.getElementById('admin-email').value;
+                const password = document.getElementById('admin-password').value;
+                adminLoginError.classList.add('hidden');
+
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        const firebaseUser = userCredential.user;
+                        // Find the corresponding local user by email
+                        let localUser = state.users.find(u => u.email === firebaseUser.email && u.isAdmin);
+                        if (localUser) {
+                            login(localUser);
+                        } else {
+                            // If admin exists in Firebase but not locally, create local entry
+                            const newLocalAdmin = {
+                                id: Date.now(),
+                                name: firebaseUser.displayName || 'Admin',
+                                email: firebaseUser.email,
+                                isAdmin: true,
+                                mustChangePassword: false,
+                                activeShift: { id: null, start: null, sales: [] }
+                            };
+                            state.users.push(newLocalAdmin);
+                            saveData();
+                            login(newLocalAdmin);
+                        }
+                    })
+                    .catch((error) => {
+                        switch (error.code) {
+                            case 'auth/user-not-found':
+                            case 'auth/wrong-password':
+                                adminLoginError.textContent = 'Invalid email or password.';
+                                break;
+                            case 'auth/invalid-email':
+                                adminLoginError.textContent = 'Please enter a valid email address.';
+                                break;
+                            default:
+                                adminLoginError.textContent = 'An error occurred. Please try again.';
+                        }
+                        adminLoginError.classList.remove('hidden');
+                    });
+            }
+
+            function handleForgotPassword(e) {
+                e.preventDefault();
+                const content = `<div><label for="reset-email-input" class="block text-sm font-medium text-gray-300">Enter your admin email address</label><input type="email" id="reset-email-input" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>`;
+                showModal('Reset Password', content, () => {
+                    const email = document.getElementById('reset-email-input').value;
+                    if (!email) return false;
+
+                    sendPasswordResetEmail(auth, email)
+                        .then(() => {
+                            showModal('Check Your Email', `A password reset link has been sent to ${email}.`, () => true, false);
+                        })
+                        .catch((error) => {
+                            showModal('Error', `Could not send reset email. Please check the address and try again.`, () => true, false);
+                        });
+                    return true;
+                });
+            }
+
+            function handleCreateAdminAccount(e) {
+                e.preventDefault();
+                const content = `<div><label for="new-admin-name" class="block text-sm font-medium text-gray-300">Full Name</label><input type="text" id="new-admin-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="new-admin-email" class="block text-sm font-medium text-gray-300">Email Address</label><input type="email" id="new-admin-email" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="new-admin-password" class="block text-sm font-medium text-gray-300">Password (min. 6 characters)</label><input type="password" id="new-admin-password" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>`;
+                showModal('Create New Admin Account', content, () => {
+                    const name = document.getElementById('new-admin-name').value;
+                    const email = document.getElementById('new-admin-email').value;
+                    const password = document.getElementById('new-admin-password').value;
+
+                    if (!name || !email || password.length < 6) {
+                        alert("Please fill all fields correctly."); // Replace with modal later
+                        return false;
+                    }
+
+                    createUserWithEmailAndPassword(auth, email, password)
+                        .then(userCredential => {
+                            // Add user to local state
+                            const newUser = {
+                                id: Date.now(),
+                                name: name,
+                                email: email,
+                                isAdmin: true,
+                                mustChangePassword: false,
+                                activeShift: { id: null, start: null, sales: [] }
+                            };
+                            state.users.push(newUser);
+                            saveData();
+                            showModal('Success', 'Admin account created successfully. You can now log in.', () => true, false);
+                        })
+                        .catch(error => {
+                            let message = 'Could not create account.';
+                            if (error.code === 'auth/email-already-in-use') {
+                                message = 'This email address is already in use.';
+                            } else if (error.code === 'auth/weak-password') {
+                                message = 'The password is too weak.';
+                            }
+                            showModal('Error', message, () => true, false);
+                        });
+
+                    return true;
+                });
+            }
+
+            function login(user) { 
+                state.currentUser = user; 
+                loginScreen.style.display = 'none';
+                appDiv.classList.remove('hidden'); 
+                waiterInfo.textContent = `User: ${state.currentUser.name}`; 
+                waiterLoginForm.reset();
+                adminLoginForm.reset();
+                waiterLoginError.classList.add('hidden'); 
+                adminLoginError.classList.add('hidden'); 
+                renderAll(); 
+                saveData(); 
+            }
+
+            function logout() { 
+                // Only sign out from Firebase if the current user is an admin
+                if (state.currentUser && state.currentUser.isAdmin) {
+                    signOut(auth).then(() => {
+                        console.log('Firebase admin user signed out.');
+                    }).catch((error) => {
+                        console.error('Sign out error', error);
+                    });
+                }
+                
+                // Proceed with local logout for all users
+                state.currentUser = null; 
+                loginScreen.style.display = 'flex';
+                appDiv.classList.add('hidden'); 
+                saveData(); 
+            }
+            
+            function setupLoginScreen() {
+                // Tab switching logic
+                adminLoginTab.addEventListener('click', () => {
+                    adminLoginTab.classList.add('active');
+                    waiterLoginTab.classList.remove('active');
+                    adminLoginFormSection.classList.add('active');
+                    waiterLoginFormSection.classList.remove('active');
+                });
+                waiterLoginTab.addEventListener('click', () => {
+                    waiterLoginTab.classList.add('active');
+                    adminLoginTab.classList.remove('active');
+                    waiterLoginFormSection.classList.add('active');
+                    adminLoginFormSection.classList.remove('active');
+                });
+
+                // Show/hide admin creation link based on config
+                if (allowAdminCreation) {
+                    createAdminSection.classList.remove('hidden');
+                }
+            }
+
+            // --- SHIFT MANAGEMENT ---
+            function startShift() { 
+                const user = state.users.find(u => u.id === state.currentUser.id);
+                if (user.activeShift && user.activeShift.id) { 
+                    showModal('Shift Active', 'A shift is already active.', () => true, false);
+                    return; 
+                } 
+                user.activeShift = { id: Date.now(), start: new Date().toISOString(), sales: [] }; 
+                saveData(); 
+                renderShiftControls(); 
+            }
+            function endShift() { 
+                const user = state.users.find(u => u.id === state.currentUser.id);
+                if (!user.activeShift || !user.activeShift.id) { 
+                    showModal('No Active Shift', 'There is no active shift to end.', () => true, false);
+                    return; 
+                } 
+                
+                const shiftReport = { 
+                    ...user.activeShift, 
+                    end: new Date().toISOString(),
+                    waiterId: user.id,
+                    waiterName: user.name
+                };
+                
+                state.shifts.push(shiftReport);
+                
+                showModal('Shift Ended', `<p>Shift ended successfully.</p><p>Total Sales This Shift: Ksh ${shiftReport.sales.reduce((t,s) => t + s.total, 0).toFixed(2)}</p>`, () => true, false); 
+                
+                user.activeShift = { id: null, start: null, sales: [] }; 
+                saveData(); 
+                renderShiftControls(); 
+            }
+
+            // --- MODAL ---
+            function showModal(title, content, onConfirm, showConfirm = true) {
+                modalTitle.textContent = title;
+                modalBody.innerHTML = content;
+                
+                modalFooter.innerHTML = `
+                    <button id="modal-close-btn-dynamic" class="bg-gray-600 text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-500">Close</button>
+                    <button id="modal-confirm-btn-dynamic" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Confirm</button>
+                `;
+                
+                const newConfirmBtn = document.getElementById('modal-confirm-btn-dynamic');
+                const newCloseBtn = document.getElementById('modal-close-btn-dynamic');
+
+                newConfirmBtn.classList.toggle('hidden', !showConfirm);
+                newConfirmBtn.onclick = () => { if(onConfirm()) { hideModal(); } };
+                newCloseBtn.onclick = hideModal;
+
+                modal.classList.remove('hidden');
+            }
+            function hideModal() { modal.classList.add('hidden'); }
+            
+            // --- The rest of the rendering and core logic functions (renderAll, renderTabs, etc.) remain largely the same ---
+            // ... (All other functions from V14.0 are assumed to be here)
+            function renderAll() {
+                if (!state.currentUser) return;
+                renderTabs();
+                const firstVisibleTab = tabsContainer.querySelector('button');
+                if (firstVisibleTab) {
+                    const activeTab = tabsContainer.querySelector('button.active')?.dataset.tab || (state.currentUser.isAdmin ? 'dashboard' : firstVisibleTab.dataset.tab);
+                    tabsContainer.querySelectorAll('button').forEach(tab => {
+                        const isSelected = tab.dataset.tab === activeTab;
+                        tab.classList.toggle('active', isSelected);
+                        if (tabContents[tab.dataset.tab]) {
+                            tabContents[tab.dataset.tab].classList.toggle('hidden', !isSelected);
+                        }
+                    });
+                }
+                populateCategoryDropdowns();
+                renderDashboard();
+                renderProductCategoriesNav();
+                renderProductsGrid(document.querySelector('.category-btn.active')?.dataset.category || 'Favorites');
+                renderProductListManagement();
+                renderSalesHistory(false);
+                renderSalesHistory(true);
+                if (state.currentUser.isAdmin) {
+                    renderUserListManagement();
+                    renderCategoryManagement();
+                }
+                renderSettings();
+                renderCart();
+                renderOpenBills();
+                renderShiftControls();
+                updateAdminControlsVisibility();
+            }
+            function renderTabs() { tabsContainer.innerHTML = ''; const allTabs = [ { key: 'dashboard', label: 'Dashboard', adminOnly: true }, { key: 'products', label: 'Products', adminOnly: false }, { key: 'my-sales', label: 'My Sales', adminOnly: false }, { key: 'all-sales', label: 'All Sales', adminOnly: true }, { key: 'waiters', label: 'Waiters', adminOnly: true }, { key: 'categories', label: 'Categories', adminOnly: true }, { key: 'settings', label: 'Settings', adminOnly: false }, ]; const visibleTabs = allTabs.filter(tab => !tab.adminOnly || (state.currentUser && state.currentUser.isAdmin)); visibleTabs.forEach((tab) => { const button = document.createElement('button'); button.setAttribute('role', 'tab'); button.setAttribute('data-tab', tab.key); button.className = `tab-btn`; button.textContent = tab.label; tabsContainer.appendChild(button); }); }
+            function renderDashboard() { if (!state.currentUser || !state.currentUser.isAdmin) return; const activeWaiters = state.users.filter(u => !u.isAdmin && u.activeShift && u.activeShift.id); const activeWaitersHtml = activeWaiters.length > 0 ? activeWaiters.map(u => `<li>${u.name} (since ${new Date(u.activeShift.start).toLocaleTimeString()})</li>`).join('') : '<li>No waiters currently on shift.</li>'; const today = new Date().toISOString().slice(0, 10); const todaysSales = state.sales.filter(s => s.date.startsWith(today)); const totalSales = todaysSales.reduce((sum, s) => sum + s.total, 0); const salesByWaiter = todaysSales.reduce((acc, sale) => { acc[sale.waiter] = (acc[sale.waiter] || 0) + sale.total; return acc; }, {}); const salesByWaiterHtml = Object.entries(salesByWaiter).length > 0 ? Object.entries(salesByWaiter).map(([name, total]) => `<li>${name}: Ksh ${total.toFixed(2)}</li>`).join('') : '<li>No sales yet today.</li>'; tabContents.dashboard.innerHTML = `<div class="space-y-4"><div class="bg-gray-700 p-4 rounded-lg"><h3 class="font-semibold text-blue-300">Active Waiters</h3><ul class="list-disc list-inside text-sm text-blue-400">${activeWaitersHtml}</ul></div><div class="bg-gray-700 p-4 rounded-lg"><h3 class="font-semibold text-gray-200">Today's Total Sales</h3><p class="text-3xl font-bold text-green-400">Ksh ${totalSales.toFixed(2)}</p></div><div class="bg-gray-700 p-4 rounded-lg"><h3 class="font-semibold text-gray-200">Sales by Waiter (Live)</h3><ul class="list-disc list-inside text-sm text-gray-300">${salesByWaiterHtml}</ul></div><button data-action="gemini-summary" class="gemini-button w-full mt-2 py-2 rounded-lg shadow transition">✨ Get Daily Summary</button></div>`; }
+            function renderProductsGrid(category = 'Favorites') { let productsToShow = state.products; if (category === 'Favorites') { const salesCounts = state.sales.flatMap(s => s.items).reduce((acc, item) => { acc[item.productId] = (acc[item.productId] || 0) + item.quantity; return acc; }, {}); productsToShow = state.products.filter(p => p.isFavorite || salesCounts[p.id]).sort((a,b) => (salesCounts[b.id] || 0) - (salesCounts[a.id] || 0)); } else if (category !== 'All') { productsToShow = state.products.filter(p => p.category === category); } productGrid.innerHTML = ''; if (productsToShow.length === 0) { productGrid.innerHTML = `<p class="text-gray-400 col-span-full">No products in this category.</p>`; return; } productsToShow.forEach(p => { const disabled = p.stock <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700 hover:border-blue-500'; const stockInfo = p.stock <= 0 ? '<span class="text-red-500 font-bold">Out of Stock</span>' : `<span class="text-gray-400">${p.stock} in stock</span>`; const productCard = document.createElement('div'); productCard.className = `border rounded-lg p-4 text-center cursor-pointer transition border-gray-700 bg-gray-800 ${disabled}`; productCard.setAttribute('role', 'gridcell'); productCard.setAttribute('tabindex', p.stock > 0 ? '0' : '-1'); productCard.innerHTML = `<h4 class="font-semibold text-gray-100">${p.name}</h4><p class="text-lg font-bold text-blue-400">Ksh ${p.price.toFixed(2)}</p><p class="text-xs">${stockInfo}</p>`; if (p.stock > 0) { productCard.addEventListener('click', () => addToCart(p.id)); productCard.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') addToCart(p.id); }); } productGrid.appendChild(productCard); }); }
+            function renderProductCategoriesNav() { const categories = ['Favorites', 'All', ...state.categories]; productCategoriesNav.innerHTML = categories.map((cat, index) => `<button data-category="${cat}" class="category-btn px-3 py-1 border rounded-full text-sm border-gray-600 ${index === 0 ? 'active' : ''}">${cat === 'Favorites' ? '⭐ ' : ''}${cat}</button>`).join(''); }
+            function populateCategoryDropdowns() { const selects = document.querySelectorAll('#product-category, #edit-product-category'); selects.forEach(select => { const currentVal = select.value; select.innerHTML = state.categories.map(c => `<option value="${c}">${c}</option>`).join(''); select.value = currentVal; }); }
+            function renderProductListManagement() { const canManage = state.currentUser.isAdmin; tabContents.products.querySelector('#add-product-form').classList.toggle('hidden', !canManage); tabContents.products.querySelector('#gemini-stock-btn').classList.toggle('hidden', !canManage); productListManagement.innerHTML = state.products.map(p => `<div class="flex justify-between items-center bg-gray-700 p-2 rounded-md"><div><p class="font-medium">${p.name}</p><p class="text-sm text-gray-400">Ksh ${p.price.toFixed(2)} - Stock: ${p.stock} - Cat: ${p.category}</p></div><div class="flex items-center space-x-3 ${canManage ? '' : 'hidden'}"><button data-id="${p.id}" data-action="toggle-favorite" aria-label="Toggle Favorite for ${p.name}" class="text-gray-400 hover:text-yellow-500"><i class="${p.isFavorite ? 'fas' : 'far'} fa-star"></i></button><button data-id="${p.id}" data-action="edit-product" aria-label="Edit ${p.name}" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button data-id="${p.id}" data-action="delete-product" aria-label="Delete ${p.name}" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></div></div>`).join('') || `<p class="text-gray-400 text-sm">No products added yet.</p>`; }
+            function renderCart() { cartDiv.innerHTML = ''; const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); const enableBtns = total > 0; if (state.cart.length === 0) { cartDiv.innerHTML = `<p class="text-gray-400">Your cart is empty.</p>`; } else { state.cart.forEach(item => { const cartItemDiv = document.createElement('div'); cartItemDiv.className = 'flex justify-between items-center bg-gray-700 p-2 rounded-md'; cartItemDiv.innerHTML = `<div><p class="font-medium">${item.name}</p><p class="text-sm text-gray-400">Ksh ${item.price.toFixed(2)}</p></div><div class="flex items-center space-x-3"><button data-id="${item.productId}" data-action="decrease-qty" aria-label="Decrease quantity of ${item.name}" class="bg-gray-600 w-6 h-6 rounded-full">-</button><span class="font-bold">${item.quantity}</span><button data-id="${item.productId}" data-action="increase-qty" aria-label="Increase quantity of ${item.name}" class="bg-gray-600 w-6 h-6 rounded-full">+</button></div>`; cartDiv.appendChild(cartItemDiv); }); } cartTotalSpan.textContent = `Ksh ${total.toFixed(2)}`; payCashBtn.disabled = !enableBtns; payMpesaBtn.disabled = !enableBtns; payCardBtn.disabled = !enableBtns; saveBillBtn.disabled = !enableBtns; clearCartBtn.disabled = !(state.cart.length > 0 || state.currentBillId); printBillBtn.disabled = !state.currentBillId; }
+            function renderSalesHistory(forCurrentUser = false) { const targetList = forCurrentUser ? tabContents['my-sales'] : tabContents['all-sales']; targetList.innerHTML = ''; let salesToShow = forCurrentUser ? state.sales.filter(s => s.waiter === state.currentUser.name) : state.sales; if (salesToShow.length === 0) { targetList.innerHTML = `<p class="text-gray-400 text-sm">No sales recorded yet.</p>`; return; } const reversedSales = [...salesToShow].reverse(); targetList.innerHTML = reversedSales.map(sale => { const itemsHtml = sale.items.map(item => `<li>${item.quantity} x ${item.name}</li>`).join(''); const transactionCode = sale.transactionCode ? `<p class="text-xs text-gray-400">${sale.paymentMethod}: ${sale.transactionCode}</p>` : ''; let paymentMethodClass = 'bg-green-500'; if (sale.paymentMethod === 'M-PESA') paymentMethodClass = 'bg-emerald-500'; if (sale.paymentMethod === 'Card') paymentMethodClass = 'bg-blue-500'; return `<div class="bg-gray-700 p-3 rounded-md border border-gray-600"><div class="flex justify-between items-start"><div><p class="font-bold">${sale.waiter}</p><p class="text-sm text-gray-400">${new Date(sale.date).toLocaleString()}</p>${transactionCode}</div><div class="text-right"><p class="font-semibold text-lg text-green-400">Ksh ${sale.total.toFixed(2)}</p><p class="text-xs font-medium text-white px-2 py-1 rounded-full ${paymentMethodClass}">${sale.paymentMethod}</p></div></div><ul class="text-sm list-disc list-inside mt-2 text-gray-300">${itemsHtml}</ul></div>`; }).join(''); }
+            function renderUserListManagement() { const activeUsers = state.users.filter(u => !u.isDeleted); const deletedUsers = state.users.filter(u => u.isDeleted); userListManagement.innerHTML = activeUsers.map(u => { const adminBadge = u.isAdmin ? '<span class="text-xs bg-blue-200 text-blue-800 font-semibold px-2 py-0.5 rounded-full">Admin</span>' : ''; return `<div class="flex justify-between items-center bg-gray-700 p-2 rounded-md"><div><p class="font-medium">${u.name} ${adminBadge}</p></div><button data-id="${u.id}" data-action="delete-user" aria-label="Delete ${u.name}" class="text-red-500 hover:text-red-700 ${u.isAdmin ? 'hidden' : ''}"><i class="fas fa-trash"></i></button></div>`; }).join(''); if (deletedUsers.length > 0) { userListManagement.innerHTML += `<hr class="my-6 border-gray-600"><h3 class="font-semibold text-gray-200 mb-2">Deleted Waiters</h3>`; userListManagement.innerHTML += deletedUsers.map(u => `<div class="flex justify-between items-center bg-red-900/20 p-2 rounded-md opacity-60"><div><p class="font-medium italic">${u.name}</p></div><div class="space-x-4"><button data-id="${u.id}" data-action="restore-user" aria-label="Restore ${u.name}" class="text-green-500 hover:text-green-400"><i class="fas fa-undo"></i></button><button data-id="${u.id}" data-action="hard-delete-user" aria-label="Permanently Delete ${u.name}" class="text-red-700 hover:text-red-900"><i class="fas fa-fire"></i></button></div></div>`).join(''); } }
+            function renderSettings() { const isAdmin = state.currentUser.isAdmin; document.getElementById('security-settings-section').style.display = 'block'; document.getElementById('business-settings-section').style.display = isAdmin ? 'block' : 'none'; document.getElementById('data-management-section').style.display = isAdmin ? 'block' : 'none'; document.getElementById('reporting-section').style.display = isAdmin ? 'block' : 'none'; document.getElementById('waiter-settings').style.display = isAdmin ? 'none' : 'block'; if (isAdmin) { document.getElementById('business-name').value = state.settings.businessName || ''; document.getElementById('mpesa-till').value = state.settings.mpesaTill || ''; } document.querySelector('h1').textContent = state.settings.businessName || 'BarSoko POS'; }
+            function renderOpenBills() { const billsToShow = state.currentUser.isAdmin ? state.openBills : state.openBills.filter(b => b.waiterId === state.currentUser.id); openBillsContainer.innerHTML = ''; const newBillButton = document.createElement('button'); newBillButton.className = 'border-2 border-dashed border-gray-600 rounded-lg p-4 text-center text-gray-400 hover:bg-gray-700 hover:border-gray-500 transition'; newBillButton.innerHTML = `<i class="fas fa-plus text-2xl"></i><p class="font-semibold mt-1">New Bill</p>`; newBillButton.addEventListener('click', createNewBill); openBillsContainer.appendChild(newBillButton); billsToShow.forEach(bill => { const billButton = document.createElement('button'); const isSelected = state.currentBillId === bill.id; billButton.className = `border rounded-lg p-4 text-center cursor-pointer transition relative ${isSelected ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-700 border-gray-600 hover:border-blue-400'}`; const waiterNameHtml = state.currentUser.isAdmin ? `<p class="text-xs opacity-70">${bill.waiterName}</p>` : ''; const statusLabel = `<span class="absolute top-1 right-1 text-xs bg-red-500 text-white font-semibold px-2 py-0.5 rounded-full">Unpaid</span>`; billButton.innerHTML = `${statusLabel}<p class="font-bold text-lg">${bill.name}</p><p class="text-sm">Ksh ${bill.items.reduce((t,i) => t + (i.price * i.quantity), 0).toFixed(2)}</p>${waiterNameHtml}`; billButton.addEventListener('click', () => openBill(bill.id)); openBillsContainer.appendChild(billButton); }); }
+            function renderShiftControls() { const user = state.users.find(u => u.id === state.currentUser.id); if (!user) return; const shiftStatus = user.activeShift && user.activeShift.id ? `Shift Active since ${new Date(user.activeShift.start).toLocaleTimeString()}` : 'No active shift.'; const shiftButton = user.activeShift && user.activeShift.id ? `<button data-action="end-shift" class="w-full bg-red-600 text-white py-2 rounded-lg">End Shift</button>` : `<button data-action="start-shift" class="w-full bg-green-600 text-white py-2 rounded-lg">Start Shift</button>`; shiftManagementPanel.innerHTML = `<h3 class="font-semibold text-blue-300">Shift Management</h3><p class="text-sm text-blue-400 mb-2">${shiftStatus}</p>${shiftButton}`; }
+            function renderCategoryManagement() { categoryListManagement.innerHTML = state.categories.map(cat => ` <div class="flex justify-between items-center bg-gray-700 p-2 rounded-md"> <p class="font-medium">${cat}</p> <div class="flex items-center space-x-3"> <button data-cat="${cat}" data-action="edit-category" aria-label="Edit ${cat}" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button> <button data-cat="${cat}" data-action="delete-category" aria-label="Delete ${cat}" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button> </div> </div> `).join('') || `<p class="text-gray-400 text-sm">No categories added yet.</p>`; }
+            function updateAdminControlsVisibility() { if (!state.currentUser) return; const isAdmin = state.currentUser.isAdmin; addUserBtn.style.display = isAdmin ? 'block' : 'none'; userListManagement.querySelectorAll('button[data-action="delete-user"], button[data-action="hard-delete-user"]').forEach(btn => { btn.style.display = isAdmin ? 'inline-flex' : 'none'; }); }
+            function addProduct(e) { e.preventDefault(); const name = document.getElementById('product-name').value; const price = parseFloat(document.getElementById('product-price').value); const stock = parseInt(document.getElementById('product-stock').value); const category = document.getElementById('product-category').value; if (name && !isNaN(price) && !isNaN(stock)) { state.products.push({ id: Date.now(), name, price, stock, category, isFavorite: false }); saveData(); renderProductListManagement(); renderProductsGrid(); addProductForm.reset(); } }
+            function deleteProduct(productId) { state.products = state.products.filter(p => p.id !== productId); saveData(); renderProductListManagement(); renderProductsGrid(); }
+            function toggleFavorite(productId) { const product = state.products.find(p => p.id === productId); if (product) { product.isFavorite = !product.isFavorite; } saveData(); renderProductListManagement(); }
+            function addUser() { if (!state.currentUser || !state.currentUser.isAdmin) return; const content = `<div><label for="new-user-name-modal" class="block text-sm font-medium text-gray-300">New Waiter Name</label><input type="text" id="new-user-name-modal" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="temp-password" class="block text-sm font-medium text-gray-300">Temporary Password</label><input type="text" id="temp-password" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><p id="addUserError" class="text-red-500 text-sm mt-1 hidden"></p>`; showModal('Add New Waiter', content, () => { const nameInput = document.getElementById('new-user-name-modal'); const tempPasswordInput = document.getElementById('temp-password'); const errorP = document.getElementById('addUserError'); const name = nameInput.value.trim(); const tempPassword = tempPasswordInput.value.trim(); if (!name || !tempPassword) { errorP.textContent = 'Both fields are required.'; errorP.classList.remove('hidden'); return false; } state.users.push({ id: Date.now(), name, password: tempPassword, isAdmin: false, mustChangePassword: true, activeShift: { id: null, start: null, sales: [] } }); saveData(); renderUserListManagement(); populateWaiterSelect(); return true; }); }
+            function deleteUser(userId, hardDelete = false) { const userToDelete = state.users.find(u => u.id === userId); if (userToDelete && userToDelete.isAdmin) { showModal('Action Denied', 'The Admin user cannot be deleted.', () => true, false); return; } if (userToDelete) { if (hardDelete) { state.users = state.users.filter(u => u.id !== userId); } else { userToDelete.isDeleted = true; } saveData(); renderUserListManagement(); populateWaiterSelect(); } }
+            function restoreUser(userId) { const userToRestore = state.users.find(u => u.id === userId); if (userToRestore) { userToRestore.isDeleted = false; saveData(); renderUserListManagement(); populateWaiterSelect(); } }
+            function addToCart(productId) { if (!state.currentBillId) { showModal('Action Required', 'Please create a new bill or select an existing bill before adding items to the cart.', () => true, false); return; } const product = state.products.find(p => p.id === productId); if (!product || product.stock <= 0) return; const cartItem = state.cart.find(item => item.productId === productId); if (cartItem) { if (product.stock > cartItem.quantity) { cartItem.quantity++; } else { showModal('Out of Stock', 'No more stock available for this item.', () => true, false); } } else { state.cart.push({ productId: product.id, name: product.name, price: product.price, quantity: 1 }); } renderCart(); }
+            function updateQuantity(productId, change) { const cartItem = state.cart.find(item => item.productId === productId); if (!cartItem) return; const product = state.products.find(p => p.id === productId); if (change > 0) { if (product.stock > cartItem.quantity) { cartItem.quantity += change; } else { showModal('Out of Stock', 'No more stock available for this item.', () => true, false); } } else { cartItem.quantity += change; } if (cartItem.quantity <= 0) { state.cart = state.cart.filter(item => item.productId !== productId); } renderCart(); }
+            function clearCart() { if(state.currentBillId) { state.openBills = state.openBills.filter(t => t.id !== state.currentBillId); } state.cart = []; state.currentBillId = null; currentBillInfo.textContent = ''; saveData(); renderCart(); renderOpenBills(); }
+            function processSale(paymentMethod, transactionCode = '') { const user = state.users.find(u => u.id === state.currentUser.id); if (state.cart.length === 0) return; const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); state.cart.forEach(cartItem => { const product = state.products.find(p => p.id === cartItem.productId); if (product) { product.stock -= cartItem.quantity; } }); const shiftId = (user && user.activeShift && user.activeShift.id) ? user.activeShift.id : 'N/A'; const sale = { id: Date.now(), items: [...state.cart], total: total, paymentMethod: paymentMethod, transactionCode: transactionCode, date: new Date().toISOString(), waiter: state.currentUser.name, shiftId: shiftId }; state.sales.push(sale); if (user && user.activeShift && user.activeShift.id) { user.activeShift.sales.push(sale); } if (state.currentBillId) { state.openBills = state.openBills.filter(bill => bill.id !== state.currentBillId); } state.cart = []; state.currentBillId = null; currentBillInfo.textContent = ''; saveData(); renderAll(); let modalContent = `<div class="text-center"><i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i><p class="text-2xl font-bold">Transaction Closed</p><p class="text-gray-300">Paid Ksh ${sale.total.toFixed(2)} via ${paymentMethod}</p></div>`; showModal('Sale Complete!', modalContent, () => true, false); }
+            function preSaleShiftCheck(callback) { const user = state.users.find(u => u.id === state.currentUser.id); if (!user.activeShift || !user.activeShift.id) { showModal('Start Shift?', 'You must start a shift to record this sale properly. What would you like to do?', () => { startShift(); callback(); return true; }, true); document.getElementById('modal-confirm-btn-dynamic').textContent = 'Start Shift & Sell'; document.getElementById('modal-close-btn-dynamic').textContent = 'Cancel Sale'; return false; } return true; }
+            function promptMpesaPayment() { if (!preSaleShiftCheck(promptMpesaPayment)) return; const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); let modalContent = `<p class="text-center text-gray-400">Total Amount</p><p class="text-3xl font-bold text-center text-green-400 mb-4">Ksh ${total.toFixed(2)}</p><p class="text-center font-semibold">Customer to pay to Till No: <br><strong class="text-xl">${state.settings.mpesaTill || 'Not Set'}</strong></p><hr class="my-4 border-gray-600"><div><label for="mpesa-code" class="block text-sm font-medium text-gray-300">Enter M-PESA Transaction Code</label><input type="text" id="mpesa-code" class="mt-1 block w-full border p-2 uppercase bg-gray-700 border-gray-600" placeholder="e.g., RGA123ABC4" required><p id="mpesa-error" class="text-red-500 text-sm mt-1 hidden">Code cannot be empty.</p></div>`; showModal('M-PESA Payment', modalContent, () => { const codeInput = document.getElementById('mpesa-code'); const errorP = document.getElementById('mpesa-error'); const mpesaCode = codeInput.value.trim(); if (mpesaCode) { processSale('M-PESA', mpesaCode.toUpperCase()); return true; } else { errorP.classList.remove('hidden'); codeInput.focus(); return false; } }); }
+            function promptCardPayment() { if (!preSaleShiftCheck(promptCardPayment)) return; const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0); let modalContent = `<p class="text-center text-gray-400">Total Amount</p><p class="text-3xl font-bold text-center text-blue-400 mb-4">Ksh ${total.toFixed(2)}</p><p class="text-center font-semibold">Process payment on the physical card terminal.</p><hr class="my-4 border-gray-600"><div><label for="card-code" class="block text-sm font-medium text-gray-300">Enter Card Transaction Code / Ref No.</label><input type="text" id="card-code" class="mt-1 block w-full border p-2 uppercase bg-gray-700 border-gray-600" placeholder="e.g., 123456" required><p id="card-error" class="text-red-500 text-sm mt-1 hidden">Code cannot be empty.</p></div>`; showModal('Card Payment', modalContent, () => { const codeInput = document.getElementById('card-code'); const errorP = document.getElementById('card-error'); const cardCode = codeInput.value.trim(); if (cardCode) { processSale('Card', cardCode.toUpperCase()); return true; } else { errorP.classList.remove('hidden'); codeInput.focus(); return false; } }); }
+            function createNewBill() { const content = `<div><label for="bill-name" class="block text-sm font-medium text-gray-300">Enter Table Number or Customer Name</label><input type="text" id="bill-name" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" placeholder="e.g., Table 5" required></div>`; showModal('Create New Bill', content, () => { const name = document.getElementById('bill-name').value.trim(); if (name) { const newBill = { id: Date.now(), name: name, items: [], waiterId: state.currentUser.id, waiterName: state.currentUser.name }; state.openBills.push(newBill); openBill(newBill.id); saveData(); renderOpenBills(); return true; } return false; }); }
+            function openBill(billId) { state.currentBillId = billId; const bill = state.openBills.find(t => t.id === billId); state.cart = [...bill.items]; currentBillInfo.textContent = `Bill: ${bill.name}`; saveData(); renderCart(); renderOpenBills(); }
+            function saveToBill() { if (!state.currentBillId) { showModal('Action Required', 'Please create or select a bill first.', () => true, false); return; } if (state.cart.length === 0) { showModal('Empty Order', 'Add items to the order before saving.', () => true, false); return; } const bill = state.openBills.find(t => t.id === state.currentBillId); bill.items = [...state.cart]; state.cart = []; state.currentBillId = null; currentBillInfo.textContent = ''; saveData(); renderCart(); renderOpenBills(); }
+            function handleTabClick(e) { const clickedTabKey = e.currentTarget.dataset.tab; tabsContainer.querySelectorAll('button').forEach(tab => { const isSelected = tab.dataset.tab === clickedTabKey; tab.classList.toggle('active', isSelected); if (tabContents[tab.dataset.tab]) { tabContents[tab.dataset.tab].classList.toggle('hidden', !isSelected); } }); }
+            function handleSaveSettings() { const tillInput = document.getElementById('mpesa-till'); const tillError = document.getElementById('till-error'); const tillRegex = /^[0-9]{5,7}$/; if (tillInput.value && !tillRegex.test(tillInput.value)) { tillError.textContent = 'Please enter a valid 5-7 digit Till Number.'; tillError.classList.remove('hidden'); return; } tillError.classList.add('hidden'); state.settings.businessName = document.getElementById('business-name').value.trim(); state.settings.mpesaTill = tillInput.value.trim(); saveData(); renderSettings(); showModal('Success', 'Settings saved!', () => true, false); }
+            function promptClearTransactionalData() { const content = `<p class="mb-4 text-gray-300">This action will permanently delete all sales, shifts, and open bills. It cannot be undone.</p><p class="mb-2 font-semibold text-yellow-400">To confirm, please type "DELETE" in the box below.</p><input type="text" id="delete-confirm-input" class="mt-1 block w-full border p-2 uppercase bg-gray-700 border-gray-600" autocomplete="off">`; showModal('Confirm Data Deletion', content, () => { const confirmInput = document.getElementById('delete-confirm-input'); if (confirmInput.value === 'DELETE') { state.sales = []; state.shifts = []; state.openBills = []; state.users.forEach(u => u.activeShift = { id: null, start: null, sales: [] }); saveData(); renderAll(); showModal('Success', 'All transactional data has been cleared.', () => true, false); return true; } return false; }); const confirmInput = document.getElementById('delete-confirm-input'); const confirmBtn = document.getElementById('modal-confirm-btn-dynamic'); confirmBtn.disabled = true; confirmBtn.classList.add('opacity-50', 'cursor-not-allowed'); confirmInput.addEventListener('input', () => { if (confirmInput.value === 'DELETE') { confirmBtn.disabled = false; confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed'); } else { confirmBtn.disabled = true; confirmBtn.classList.add('opacity-50', 'cursor-not-allowed'); } }); }
+            function promptChangeOwnPassword() {
+                // For admin, redirect to Firebase's password reset flow
+                if (state.currentUser.isAdmin) {
+                    showModal('Change Admin Password', 'For security, a password reset link will be sent to your email. Do you want to proceed?', () => {
+                        sendPasswordResetEmail(auth, state.currentUser.email)
+                            .then(() => {
+                                showModal('Check Your Email', `A password reset link has been sent to ${state.currentUser.email}.`, () => true, false);
+                            })
+                            .catch(err => {
+                                showModal('Error', 'Could not send reset email. Please try again later.', () => true, false);
+                            });
+                        return true;
+                    });
+                    return;
+                }
+                // For waiters, use the local password change modal
+                const content = `<div><label for="current-password" class="block text-sm font-medium text-gray-300">Current Password</label><input type="password" id="current-password" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="new-password-modal" class="block text-sm font-medium text-gray-300">New Password</label><input type="password" id="new-password-modal" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="confirm-password-modal" class="block text-sm font-medium text-gray-300">Confirm New Password</label><input type="password" id="confirm-password-modal" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><p id="changePwError" class="text-red-500 text-sm mt-1 hidden"></p>`; 
+                showModal('Change Your Password', content, () => { 
+                    const currentPw = document.getElementById('current-password').value; 
+                    const newPw = document.getElementById('new-password-modal').value; 
+                    const confirmPw = document.getElementById('confirm-password-modal').value; 
+                    const errorP = document.getElementById('changePwError'); 
+                    if (currentPw !== state.currentUser.password) { errorP.textContent = 'Current password is incorrect.'; errorP.classList.remove('hidden'); return false; } 
+                    if (!newPw || newPw.length < 4) { errorP.textContent = 'New password must be at least 4 characters.'; errorP.classList.remove('hidden'); return false; } 
+                    if (newPw !== confirmPw) { errorP.textContent = 'New passwords do not match.'; errorP.classList.remove('hidden'); return false; } 
+                    const user = state.users.find(u => u.id === state.currentUser.id); 
+                    user.password = newPw; 
+                    saveData(); 
+                    showModal('Success', 'Password changed successfully!', () => true, false); 
+                    return true; 
+                }); 
+            }
+            function handleSelfDelete() { showModal('Confirm Account Deletion', 'Are you sure you want to delete your account? This action is permanent and you will be logged out.', () => { deleteUser(state.currentUser.id); logout(); return true; }); }
+            function updateOnlineStatus() { const online = navigator.onLine; statusIndicator.innerHTML = `<div class="w-3 h-3 ${online ? 'bg-green-500' : 'bg-red-500'} rounded-full animate-pulse"></div><span class="text-sm font-medium text-gray-400">${online ? 'Online' : 'Offline'}</span>`; }
+            function handleSync() { if (!navigator.onLine) { showModal("Offline", "You are offline. Connect to the internet to sync.", () => true, false); return; } syncIcon.classList.add('fa-spin'); syncBtn.disabled = true; setTimeout(() => { console.log("--- SIMULATING SYNC ---"); console.log("Data sent to server:", JSON.stringify({ sales: state.sales, products: state.products })); syncIcon.classList.remove('fa-spin'); syncBtn.disabled = false; showModal('Sync Complete', 'Your offline data has been backed up to the cloud.', () => true, false); }, 2000); }
+            function downloadNinetyDayReport() { download90DayReportBtn.disabled = true; download90DayReportBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span class="ml-2">Generating Report...</span>`; setTimeout(() => { const endDate = new Date(); const startDate = new Date(); startDate.setDate(endDate.getDate() - 90); startDate.setHours(0, 0, 0, 0); const salesToReport = state.sales.filter(s => { const saleDate = new Date(s.date); return saleDate >= startDate && saleDate <= endDate; }); const shiftsToReport = state.shifts.filter(sh => { const shiftDate = new Date(sh.start); return shiftDate >= startDate && shiftDate <= endDate; }); if (salesToReport.length === 0) { showModal('No Data', 'No sales recorded in the last 90 days.', () => true, false); resetReportButton(); return; } const escapeCsvCell = (cell) => { const stringCell = String(cell === null || cell === undefined ? '' : cell); if (stringCell.includes(',') || stringCell.includes('"') || stringCell.includes('\n')) { return `"${stringCell.replace(/"/g, '""')}"`; } return stringCell; }; const totalRevenue = salesToReport.reduce((sum, s) => sum + s.total, 0); const productSales = salesToReport.flatMap(s => s.items).reduce((acc, item) => { acc[item.name] = (acc[item.name] || 0) + item.quantity; return acc; }, {}); const top5Products = Object.entries(productSales).sort((a, b) => b[1] - a[1]).slice(0, 5); const waiterSales = salesToReport.reduce((acc, sale) => { acc[sale.waiter] = (acc[sale.waiter] || 0) + sale.total; return acc; }, {}); const topWaiter = Object.entries(waiterSales).sort((a, b) => b[1] - a[1])[0] || ['N/A', 0]; const dailyRevenue = salesToReport.reduce((acc, sale) => { const day = new Date(sale.date).toISOString().slice(0, 10); acc[day] = (acc[day] || 0) + sale.total; return acc; }, {}); const waiterAnalytics = shiftsToReport.reduce((acc, shift) => { if (!acc[shift.waiterName]) { acc[shift.waiterName] = { totalHours: 0, totalSales: 0 }; } if (shift.end) { const duration = (new Date(shift.end) - new Date(shift.start)) / (1000 * 60 * 60); acc[shift.waiterName].totalHours += duration; } const shiftSales = shift.sales.reduce((sum, s) => sum + s.total, 0); acc[shift.waiterName].totalSales += shiftSales; return acc; }, {}); let csvContent = ``; csvContent += `"90-Day Performance Report"\n`; csvContent += `"Generated On:","${new Date().toLocaleString('en-GB')}"\n`; csvContent += `"Business Name:","${state.settings.businessName}"\n\n`; csvContent += `"Executive Summary"\n`; csvContent += `"Metric","Value"\n`; csvContent += `"Total Revenue (90 Days)","Ksh ${totalRevenue.toFixed(2)}"\n`; csvContent += `"Top Performing Waiter","${topWaiter[0]} (Ksh ${topWaiter[1].toFixed(2)})"\n\n`; csvContent += `"Top 5 Selling Items (by Quantity)"\n`; csvContent += `"Product","Units Sold"\n`; top5Products.forEach(p => { csvContent += `"${p[0]}","${p[1]}"\n`; }); csvContent += `\n`; csvContent += `"Waiter Analytics"\n`; csvContent += `"Waiter","Total Sales (Ksh)","Total Hours Worked"\n`; Object.entries(waiterAnalytics).forEach(([name, data]) => { csvContent += `"${name}","${data.totalSales.toFixed(2)}","${data.totalHours.toFixed(2)}"\n`; }); csvContent += `\n`; csvContent += `"Daily Revenue Breakdown"\n`; csvContent += `"Date","Total Revenue (Ksh)"\n`; Object.entries(dailyRevenue).sort((a,b) => a[0].localeCompare(b[0])).forEach(([day, total]) => { csvContent += `"${day}","${total.toFixed(2)}"\n`; }); csvContent += `\n`; const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); const url = URL.createObjectURL(blob); const reportDate = new Date().toISOString().slice(0, 10); link.setAttribute("href", url); link.setAttribute("download", `BarSoko_90Day_Report_${reportDate}.csv`); link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link); resetReportButton(); }, 1500); }
+            function resetReportButton() { download90DayReportBtn.disabled = false; download90DayReportBtn.innerHTML = `<i class="fas fa-file-csv"></i><span class="ml-2">Download 90-Day Report (CSV)</span>`; }
+            function generateReceiptHtml(bill, isCopy = false) { if (!bill) return ''; const total = bill.items.reduce((sum, item) => sum + (item.price * item.quantity), 0); const copyText = isCopy ? `<p style="text-align: center; font-weight: bold; margin: 10px 0;">*** COPY ***</p>` : ''; return ` <div style="font-family: 'Courier New', monospace; width: 280px; font-size: 12px; color: #000;"> <h2 style="text-align: center; font-size: 16px; margin: 0 0 10px 0;">${state.settings.businessName}</h2> <p style="text-align: center; margin: 0;">Bill for: ${bill.name}</p> <p style="text-align: center; margin: 0;">Served by: ${bill.waiterName}</p> <p style="text-align: center; margin: 0; font-size: 10px;">${new Date().toLocaleString('en-GB')}</p> ${copyText} <hr style="border: none; border-top: 1px dashed #000; margin: 10px 0;"> <table style="width: 100%; border-collapse: collapse; font-size: 11px;"> <thead> <tr> <th style="text-align: left; padding: 2px;">Item</th> <th style="text-align: center; padding: 2px;">Qty</th> <th style="text-align: right; padding: 2px;">Price</th> <th style="text-align: right; padding: 2px;">Total</th> </tr> </thead> <tbody> ${bill.items.map(item => ` <tr> <td style="padding: 2px; max-width: 140px; word-wrap: break-word;">${item.name}</td> <td style="text-align: center; padding: 2px;">${item.quantity}</td> <td style="text-align: right; padding: 2px;">${item.price.toFixed(0)}</td> <td style="text-align: right; padding: 2px;">${(item.price * item.quantity).toFixed(0)}</td> </tr> `).join('')} </tbody> </table> <hr style="border: none; border-top: 1px dashed #000; margin: 10px 0;"> <div style="text-align: right; font-size: 16px; font-weight: bold;"> <p style="margin: 0;">TOTAL: Ksh ${total.toFixed(2)}</p> </div> <p style="text-align: center; margin-top: 20px; font-size: 10px;">Thank you for your business!</p> <p style="text-align: center; margin: 0; font-size: 10px;">M-PESA Till: ${state.settings.mpesaTill || 'N/A'}</p> </div> `; }
+            function handlePrintBill() { if (!state.currentBillId) { showModal("No Bill Selected", "Please select a bill to print.", () => true, false); return; } const bill = state.openBills.find(b => b.id === state.currentBillId); if (!bill) return; const receiptHtml = generateReceiptHtml(bill, false); printPreviewArea.innerHTML = receiptHtml; printPreviewModal.classList.remove('hidden'); }
+            function promptEditProduct(product) { if (!product) return; const content = `<input type="hidden" id="edit-product-id" value="${product.id}"><div><label for="edit-product-name" class="block text-sm font-medium text-gray-300">Product Name</label><input type="text" id="edit-product-name" value="${product.name}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div><div class="mt-2"><label for="edit-product-price" class="block text-sm font-medium text-gray-300">Price (Ksh)</label><input type="number" id="edit-product-price" value="${product.price}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div><div class="mt-2"><label for="edit-product-category" class="block text-sm font-medium text-gray-300">Category</label><select id="edit-product-category" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600"></select></div><div class="mt-2"><label for="edit-product-stock" class="block text-sm font-medium text-gray-300">Stock</label><input type="number" id="edit-product-stock" value="${product.stock}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required min="0"></div>`; showModal('Edit Product', content, () => { const id = parseInt(document.getElementById('edit-product-id').value); const name = document.getElementById('edit-product-name').value; const price = parseFloat(document.getElementById('edit-product-price').value); const category = document.getElementById('edit-product-category').value; const stock = parseInt(document.getElementById('edit-product-stock').value); const productToUpdate = state.products.find(p => p.id === id); if (productToUpdate) { productToUpdate.name = name; productToUpdate.price = price; productToUpdate.category = category; productToUpdate.stock = stock; saveData(); renderProductListManagement(); renderProductsGrid(); } return true; }); populateCategoryDropdowns(); document.getElementById('edit-product-category').value = product.category; }
+            function addCategory(e) { e.preventDefault(); const nameInput = document.getElementById('category-name'); const name = nameInput.value.trim(); if (name && !state.categories.includes(name)) { state.categories.push(name); saveData(); renderCategoryManagement(); populateCategoryDropdowns(); renderProductCategoriesNav(); nameInput.value = ''; } else { showModal('Error', 'Category name cannot be empty or already exist.', () => true, false); } }
+            function editCategory(oldName) { const content = `<div><label for="edit-category-name" class="block text-sm font-medium">New Name for "${oldName}"</label><input type="text" id="edit-category-name" value="${oldName}" class="mt-1 block w-full border p-2 bg-gray-700 border-gray-600" required></div>`; showModal('Edit Category', content, () => { const newName = document.getElementById('edit-category-name').value.trim(); if (newName && !state.categories.includes(newName)) { state.products.forEach(p => { if (p.category === oldName) p.category = newName; }); const index = state.categories.indexOf(oldName); if (index > -1) state.categories[index] = newName; saveData(); renderAll(); return true; } else { showModal('Error', 'New name cannot be empty or already exist.', () => true, false); return false; } }); }
+            function deleteCategory(catName) { const productsInCategory = state.products.filter(p => p.category === catName).length; if (productsInCategory > 0) { showModal('Cannot Delete', `You cannot delete the "${catName}" category because ${productsInCategory} product(s) are still assigned to it. Please re-assign them first.`, () => true, false); return; } showModal('Confirm Deletion', `Are you sure you want to delete the "${catName}" category? This cannot be undone.`, () => { state.categories = state.categories.filter(c => c !== catName); saveData(); renderAll(); return true; }); }
+
+
+            // --- INITIALIZATION ---
+            loadData();
+            populateWaiterSelect();
+            updateOnlineStatus();
+            setupLoginScreen();
+
+            // --- EVENT LISTENERS ---
+            waiterLoginForm.addEventListener('submit', handleWaiterLogin);
+            adminLoginForm.addEventListener('submit', handleAdminLogin);
+            forgotPasswordLink.addEventListener('click', handleForgotPassword);
+            createAdminLink.addEventListener('click', handleCreateAdminAccount);
+            logoutBtn.addEventListener('click', logout);
+            syncBtn.addEventListener('click', handleSync);
+            saveBillBtn.addEventListener('click', saveToBill);
+            clearCartBtn.addEventListener('click', clearCart);
+            addProductForm.addEventListener('submit', addProduct);
+            addCategoryForm.addEventListener('submit', addCategory);
+            addUserBtn.addEventListener('click', addUser);
+            userListManagement.addEventListener('click', e => { if (!state.currentUser || !state.currentUser.isAdmin) return; const target = e.target.closest('button'); if (!target) return; const userId = parseInt(target.dataset.id); const action = target.dataset.action; if (action === 'delete-user') { showModal('Confirm Deletion', 'Are you sure?', () => { deleteUser(userId); return true; }); } if (action === 'hard-delete-user') { showModal('PERMANENTLY DELETE', 'This cannot be undone.', () => { deleteUser(userId, true); return true; }); } if (action === 'restore-user') { restoreUser(userId); } });
+            saveSettingsBtn.addEventListener('click', handleSaveSettings);
+            clearTransactionsBtn.addEventListener('click', promptClearTransactionalData);
+            changeMyPasswordBtn.addEventListener('click', promptChangeOwnPassword);
+            deleteMyAccountBtn.addEventListener('click', handleSelfDelete);
+            download90DayReportBtn.addEventListener('click', downloadNinetyDayReport);
+            geminiStockBtn.addEventListener('click', () => { const prompt = `I run a bar in Kenya. Current stock: ${state.products.map(p => `${p.name}: ${p.stock} units`).join(', ')}. Give me a prioritized restock list and suggest one new popular Kenyan drink to add.`; showModal('AI Suggestions', `<strong>Restock Priority:</strong><ul><li>Pilsner</li><li>Guinness</li></ul><br><strong>New Drink Suggestion:</strong><br>Consider adding **Kenya Cane (KC)**. It's a very popular and versatile local spirit that can be sold by the tot or as a cocktail base.`, ()=>true, false); });
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            tabContents.dashboard.addEventListener('click', e => { if (e.target.closest('button')?.dataset.action === 'gemini-summary') { const today = new Date().toISOString().slice(0, 10); const todaysSales = state.sales.filter(s => s.date.startsWith(today)); if (todaysSales.length === 0) { showModal("No Sales", "No sales today to summarize.", () => true, false); return; } const total = todaysSales.reduce((s, t) => s + t.total, 0); const topW = Object.entries(todaysSales.reduce((acc, sale) => { acc[sale.waiter] = (acc[sale.waiter] || 0) + sale.total; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]; showModal('AI Daily Summary', `Great work today!<ul><li>Total sales reached <strong>Ksh ${total.toFixed(2)}</strong>.</li><li>Shout-out to <strong>${topW ? topW[0] : 'the team'}</strong> for being the top earner!</li></ul><p>Keep up the fantastic momentum!</p>`, ()=>true, false); } });
+            productListManagement.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const id = parseInt(target.dataset.id); const action = target.dataset.action; if (action === 'delete-product') { showModal('Confirm Deletion', 'Are you sure?', () => { deleteProduct(id); return true; }); } if (action === 'toggle-favorite') { toggleFavorite(id); } if (action === 'edit-product') { const product = state.products.find(p => p.id === id); promptEditProduct(product); } });
+            categoryListManagement.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const cat = target.dataset.cat; if (target.dataset.action === 'edit-category') { editCategory(cat); } if (target.dataset.action === 'delete-category') { deleteCategory(cat); } });
+            cartDiv.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const productId = parseInt(target.dataset.id); const action = target.dataset.action; if (action === 'increase-qty') updateQuantity(productId, 1); if (action === 'decrease-qty') updateQuantity(productId, -1); });
+            tabsContainer.addEventListener('click', e => { const target = e.target.closest('button'); if(target) handleTabClick({currentTarget: target}); });
+            productCategoriesNav.addEventListener('click', e => { const target = e.target.closest('button'); if (target) { productCategoriesNav.querySelectorAll('button').forEach(btn => btn.classList.remove('active')); target.classList.add('active'); renderProductsGrid(target.dataset.category); } });
+            shiftManagementPanel.addEventListener('click', e => { const target = e.target.closest('button'); if (!target) return; const action = target.dataset.action; if (action === 'start-shift') startShift(); if (action === 'end-shift') endShift(); });
+            payCashBtn.addEventListener('click', () => { if (preSaleShiftCheck(() => processSale('Cash'))) processSale('Cash'); });
+            payMpesaBtn.addEventListener('click', promptMpesaPayment);
+            payCardBtn.addEventListener('click', promptCardPayment);
+            printBillBtn.addEventListener('click', handlePrintBill);
+            printPreviewCloseBtn.addEventListener('click', () => { printPreviewModal.classList.add('hidden'); });
+            printPreviewFinalBtn.addEventListener('click', () => { const bill = state.openBills.find(b => b.id === state.currentBillId); if (!bill) return; printArea.innerHTML = generateReceiptHtml(bill, false); window.print(); printPreviewModal.classList.add('hidden'); });
+            printPreviewCopyBtn.addEventListener('click', () => { const bill = state.openBills.find(b => b.id === state.currentBillId); if (!bill) return; printArea.innerHTML = generateReceiptHtml(bill, true); window.print(); });
+        });
+    </script>
+</body>
+</html>
